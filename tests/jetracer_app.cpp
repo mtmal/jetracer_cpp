@@ -31,6 +31,7 @@ int main(int argc, char** argv)
 	puts("Initialising jetracer");
 	if (racer.initialise())
 	{
+        racer.setThrottleGain(0.3);
 		puts("Testing drive motors");
 		for (float throttle : testValues)
 		{

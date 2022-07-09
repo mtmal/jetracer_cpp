@@ -21,6 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cmath>
+#include <cstdio>
 #include "NvidiaRacer.h"
 
 #define PCA9685_ADDRESS_1	0x40
@@ -63,7 +64,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 		mThrottlePCA.reset();
 		mThrottlePCA.setFrequency(1600);
 		mSteeringPCA.reset();
-//		mServo.initialise();
+		mServo.initialise();
 		return true;
 	}
 	return false;
@@ -72,7 +73,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 void NvidiaRacer::setSteering(const float steering)
 {
 	mSteering = clip(steering);
-//	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
+	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
 void NvidiaRacer::setThrottle(const float throttle)

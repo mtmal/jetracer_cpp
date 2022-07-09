@@ -36,7 +36,7 @@ public:
 	 *  @param steeringOffset initial steering offset
 	 *  @param throttleGain initial throttle gain
 	 */
-	NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = -0.8f);
+	NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = 0.8f);
 
 	/**
 	 * Class destructor, set steering and throttle to zero.

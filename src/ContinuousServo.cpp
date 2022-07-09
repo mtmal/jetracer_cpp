@@ -36,9 +36,9 @@ ContinuousServo::~ContinuousServo()
 void ContinuousServo::initialise(const int minPulse, const int maxPulse)
 {
 	float frequency = mPCA9685->getFrequency();
-	mMinDuty   = static_cast<uint16_t>((static_cast<float>(minPulse) * frequency) / 1000000.0f);
+	mMinDuty   = static_cast<uint16_t>((static_cast<float>(minPulse) * frequency) / 1000000.0f * 0xFFFF);
 	mDutyRange = static_cast<float>(
-					static_cast<uint16_t>((static_cast<float>(maxPulse) * frequency) / 1000000.0f) - mMinDuty);
+					static_cast<uint16_t>((static_cast<float>(maxPulse) * frequency) / 1000000.0f * 0xFFFF) - mMinDuty);
 }
 
 void ContinuousServo::setFraction(const float fraction) const
