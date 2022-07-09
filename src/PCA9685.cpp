@@ -60,8 +60,7 @@ PCA9685::~PCA9685()
 
 void PCA9685::reset() const
 {
-	uint8_t buf[2] = {MODE1, 0};
-	mI2C->writeData(mDeviceAddress, 2, buf);
+	mI2C->writeByte(mDeviceAddress, MODE1, 0);
 }
 
 float PCA9685::getFrequency() const
