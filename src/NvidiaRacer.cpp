@@ -63,7 +63,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 		mThrottlePCA.reset();
 		mThrottlePCA.setFrequency(1600);
 		mSteeringPCA.reset();
-		mServo.initialise();
+//		mServo.initialise();
 		return true;
 	}
 	return false;
@@ -72,7 +72,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 void NvidiaRacer::setSteering(const float steering)
 {
 	mSteering = clip(steering);
-	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
+//	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
 void NvidiaRacer::setThrottle(const float throttle)
@@ -80,23 +80,23 @@ void NvidiaRacer::setThrottle(const float throttle)
 	mThrottle = clip(throttle);
 	if (mThrottle > 0)
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>( mThrottle * mThrottleGain));
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
 		mThrottlePCA.setDutyCycle(1, 0xFFFF);
 		mThrottlePCA.setDutyCycle(2, 0);
 		mThrottlePCA.setDutyCycle(3, 0);
-		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>( mThrottle * mThrottleGain));
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>( mThrottle * mThrottleGain));
+		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
 		mThrottlePCA.setDutyCycle(6, 0xFFFF);
 		mThrottlePCA.setDutyCycle(5, 0);
 	}
 	else
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(-mThrottle * mThrottleGain));
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
 		mThrottlePCA.setDutyCycle(1, 0);
 		mThrottlePCA.setDutyCycle(2, 0xFFFF);
-		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(-mThrottle * mThrottleGain));
+		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
 		mThrottlePCA.setDutyCycle(4, 0);
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(-mThrottle * mThrottleGain));
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
 		mThrottlePCA.setDutyCycle(6, 0);
 		mThrottlePCA.setDutyCycle(5, 0xFFFF);
 	}
