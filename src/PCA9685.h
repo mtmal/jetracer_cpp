@@ -33,27 +33,27 @@ public:
 	/**
 	 * Class constructor.
 	 *  @param i2c a pointer to the class handling I2C communication.
-	 *  @param deviceAddress address of this PCA9685 chip.
+	 *  @param deviceAddress address of this PCA9685 board.
 	 */
 	PCA9685(const I2C* i2c, const uint8_t deviceAddress);
 
 	/**
-	 * Class destructor, resets the PCA9685 chip.
+	 * Class destructor, resets PCA9685.
 	 */
 	virtual ~PCA9685();
 
 	/**
-	 * Resets the PCA9685 chip.
+	 * Resets PCA9685.
 	 */
 	void reset() const;
 
 	/**
-	 *  @return the frequency of the PCA9685 chip in Hz.
+	 *  @return the frequency of PCA9685 in Hz.
 	 */
 	float getFrequency() const;
 
 	/**
-	 * Sets new frequency of the PCA9685 chip.
+	 * Sets new frequency to PCA9685.
 	 *  @param frequency new frequency in Hz.
 	 */
 	void setFrequency(const float frequency) const;
@@ -64,10 +64,21 @@ public:
 	void setDutyCycle(const uint8_t channel, const uint16_t value) const;
 
 private:
+	/**
+	 * Returns duty cycle's on and off counts.
+	 *  @param channel PCA9685's channel for which to read the information.
+	 *  @param[out] on a count when the PWM duty cycle should be set to ON.
+	 *  @param[out] off a count when the PWM duty cycle should be set to OFF.
+	 */
 	void getPWM(const uint8_t channel, uint16_t& on, uint16_t& off) const;
+
+	/**
+	 * Sets the PWM duty cycle.
+	 *  @param channel PCA9685's channel which should be modified.
+	 *  @param on a count when the PWM duty cycle should be set to ON.
+	 *  @param off a count when the PWM duty cycle should be set to OFF.
+	 */
 	void setPWM(const uint8_t channel, const uint16_t on, const uint16_t off) const;
-
-
 
 	/** Pointer to the class handling I2C communication. */
 	const I2C* mI2C;

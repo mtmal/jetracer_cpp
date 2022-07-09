@@ -27,20 +27,29 @@
 int main(int argc, char** argv)
 {
 	NvidiaRacer racer;
-	float throttleValues[7] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f};
-	puts("Hello World!");
+	float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
+	puts("Initialising jetracer");
 	if (racer.initialise())
 	{
-		for (float throttle : throttleValues)
+		puts("Testing drive motors");
+		for (float throttle : testValues)
 		{
 			printf("Setting throttle to %.2f \n", throttle);
 			racer.setThrottle(throttle);
 			sleep(1);
 		}
+
+		puts("Testing steering motor");
+		for (float steering : testValues)
+		{
+			printf("Setting steering to %.2f \n", steering);
+			racer.setSteering(steering);
+			sleep(1);
+		}
 	}
 	else
 	{
-		puts("Failed to initialise the racer!!");
+		puts("Failed to initialise jetracer!!");
 	}
 	return 0;
 }

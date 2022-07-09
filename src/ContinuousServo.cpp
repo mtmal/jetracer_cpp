@@ -20,36 +20,33 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cmath>
-#include "Racer.h"
+#include "ContinuousServo.h"
+#include "PCA9685.h"
 
-namespace
-{
-/**
- *  @return clipped @p value so that it is from within -1 and 1.
- */
-float clip(const float value)
-{
-	return fmaxf(-1.0f, fminf(1.0f, value));
-}
-} /* end of anonymous namespace */
-
-Racer::Racer() : mSteering(0.0f), mThrottle(0.0f)
+ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
+: mPCA9685(pca9685), mChannel(channel), mMinDuty(0), mDutyRange(0)
 {
 }
 
-Racer::~Racer()
+ContinuousServo::~ContinuousServo()
 {
-	setSteering(0.0f);
 	setThrottle(0.0f);
 }
 
-void Racer::setSteering(const float steering)
+void ContinuousServo::initialise(const int minPulse, const int maxPulse)
 {
-	mSteering = clip(steering);
+	float frequency = mPCA9685->getFrequency();
+	mMinDuty   = static_cast<uint16_t>((static_cast<float>(minPulse) * frequency) / 1000000.0f);
+	mDutyRange = static_cast<float>(
+					static_cast<uint16_t>((static_cast<float>(maxPulse) * frequency) / 1000000.0f) - mMinDuty);
 }
 
-void Racer::setThrottle(const float throttle)
+void ContinuousServo::setFraction(const float fraction) const
 {
-	mThrottle = clip(throttle);
+	mPCA9685->setDutyCycle(mChannel, mMinDuty + static_cast<uint16_t>(fraction * mDutyRange));
+}
+
+float ContinuousServo::getFraction() const
+{
+	return static_cast<float>(mPCA9685->getDutyCycle(mChannel) - mMinDuty) / mDutyRange;
 }

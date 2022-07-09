@@ -15,7 +15,7 @@ endif()
 include_directories(src)
 
 # Build the actual library
-add_library(jetracer SHARED src/Racer.h src/Racer.cpp src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/I2C.h src/I2C.cpp)
+add_library(jetracer SHARED src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/I2C.h src/I2C.cpp src/ContinuousServo.h src/ContinuousServo.cpp)
 
 # add the test application
 add_executable(test_jetracer tests/jetracer_app.cpp)
