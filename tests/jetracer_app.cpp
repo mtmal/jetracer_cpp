@@ -21,13 +21,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdio>
+#include <unistd.h>
 #include <NvidiaRacer.h>
 
 int main(int argc, char** argv)
 {
 	NvidiaRacer racer;
+	float throttleValues[7] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f};
 	puts("Hello World!");
-	if (!racer.initialise())
+	if (racer.initialise())
+	{
+		for (float throttle : throttleValues)
+		{
+			printf("Setting throttle to %.2f \n", throttle);
+			racer.setThrottle(throttle);
+			sleep(1);
+		}
+	}
+	else
 	{
 		puts("Failed to initialise the racer!!");
 	}
