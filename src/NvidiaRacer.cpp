@@ -26,8 +26,8 @@
 #define PCA9685_ADDRESS_2	0x60
 
 NvidiaRacer::NvidiaRacer() : Racer(), mSteeringGain(-0.65f), mSteeringOffset(0.0f), mSteeringChannel(0),
-							 mThrottleGain(0.8f), mI2C(), mThrottlePCA(&mI2C, PCA9685_ADDRESS_1),
-							 mSteeringPCA(&mI2C, PCA9685_ADDRESS_2)
+							 mThrottleGain(0.8f), mI2C(), mThrottlePCA(&mI2C, PCA9685_ADDRESS_2),
+							 mSteeringPCA(&mI2C, PCA9685_ADDRESS_1)
 {
 }
 
@@ -42,6 +42,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 	if (mI2C.openSerialPort(devicePath))
 	{
 		mThrottlePCA.reset();
+		mThrottlePCA.setFrequency(1600);
 		mSteeringPCA.reset();
 		return true;
 	}
