@@ -78,6 +78,12 @@ void NvidiaRacer::setSteering(const float steering)
 
 void NvidiaRacer::setThrottle(const float throttle)
 {
+	if ((mThrottle > 0 && throttle < 0) || (mThrottle < 0 && throttle > 0))
+	{
+		// we want to avoid going from positive to negative direction, and vice versa, without a stop.
+		setThrottle(0);
+	}
+
 	mThrottle = clip(throttle);
 	if (mThrottle > 0)
 	{
