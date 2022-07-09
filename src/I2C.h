@@ -65,7 +65,7 @@ public:
 	 *  @param length the number of bytes to read (the length of @p data).
 	 *  @param[out] data preallocated buffer for read data.
 	 */
-	void readNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, uint8_t* data) const;
+	void readNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, uint8_t data[]) const;
 
 	/**
 	 * Writes a byte to the device.
@@ -76,13 +76,12 @@ public:
 	void writeByte(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t value) const;
 
 	/**
-	 * Writes multiple bytes to the device.
+	 * Writes a chunk of data to the device. The first value in @p data has to be register address.
 	 *  @param deviceAddr serial device to write data to.
-	 *  @param regAddr the address of the register to write new data.
-	 *  @param length the number of bytes to write (the length of @p data).
-	 *  @param data buffer with data to write.
+	 *  @param length the number of bytes to write (the length of @p data) including register address.
+	 *  @param data buffer with data to write (register address as the first value).
 	 */
-	void writeNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, const uint8_t* data) const;
+	void writeData(const uint8_t deviceAddr, const uint8_t length, const uint8_t data[]) const;
 
 private:
 	/**

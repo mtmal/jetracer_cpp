@@ -76,7 +76,7 @@ uint8_t I2C::readByte(const uint8_t deviceAddr, const uint8_t regAddr) const
 	return u8Ret;
 }
 
-void I2C::readNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, uint8_t* data) const
+void I2C::readNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, uint8_t data[]) const
 {
 	if (connectToDevice(deviceAddr))
 	{
@@ -107,16 +107,13 @@ void I2C::writeByte(const uint8_t deviceAddr, const uint8_t regAddr, const uint8
 	}
 }
 
-void I2C::writeNBytes(const uint8_t deviceAddr, const uint8_t regAddr, const uint8_t length, const uint8_t* data) const
+void I2C::writeData(const uint8_t deviceAddr, const uint8_t length, const uint8_t data[]) const
 {
-	uint8_t buf[1024];
 	if (connectToDevice(deviceAddr))
 	{
-		buf[0] = regAddr;
-		memcpy(&buf[1], data, length);
-		if (length + 1 != write(mSerial, buf, length + 1))
+		if (length != write(mSerial, data, length))
 		{
-			syslog(LOG_ERR, "Failed to write %d bytes to device: %02x, address: %02x.", length, deviceAddr, regAddr);
+			syslog(LOG_ERR, "Failed to write %d bytes to device: %02x, address: %02x.", length, deviceAddr, data[0]);
 		}
 	}
 }

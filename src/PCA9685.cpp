@@ -60,7 +60,8 @@ PCA9685::~PCA9685()
 
 void PCA9685::reset() const
 {
-	mI2C->writeByte(mDeviceAddress, MODE1, 0);
+	uint8_t buf[2] = {MODE1, 0};
+	mI2C->writeData(mDeviceAddress, 2, buf);
 }
 
 float PCA9685::getFrequency() const
@@ -113,22 +114,18 @@ void PCA9685::setDutyCycle(const uint8_t channel, const uint16_t value) const
 
 void PCA9685::getPWM(const uint8_t channel, uint16_t& on, uint16_t& off) const
 {
-	// TODO: make a block read once tested.
-	uint8_t channelOffset = 4 * channel;
-	uint8_t on_l  = mI2C->readByte(mDeviceAddress, LED0_ON_L  + channelOffset);
-	uint8_t on_h  = mI2C->readByte(mDeviceAddress, LED0_ON_H  + channelOffset);
-	uint8_t off_l = mI2C->readByte(mDeviceAddress, LED0_OFF_L + channelOffset);
-	uint8_t off_h = mI2C->readByte(mDeviceAddress, LED0_OFF_H + channelOffset);
-	on  = (static_cast<uint16_t>(on_h)  << 8) & on_l;
-	off = (static_cast<uint16_t>(off_h) << 8) & off_l;
+	uint8_t buf[4] = {0, 0, 0, 0};
+	mI2C->readNBytes(mDeviceAddress, LED0_ON_L + 4 * channel, 4, buf);
+	on  = (static_cast<uint16_t>(buf[1]) << 8) & buf[0];
+	off = (static_cast<uint16_t>(buf[3]) << 8) & buf[2];
 }
 
 void PCA9685::setPWM(const uint8_t channel, const uint16_t on, const uint16_t off) const
 {
-	// TODO: make a block write once tested.
-	uint8_t channelOffset = 4 * channel;
-	mI2C->writeByte(mDeviceAddress, LED0_ON_L  + channelOffset, on  &  0xFF);
-	mI2C->writeByte(mDeviceAddress, LED0_ON_H  + channelOffset, on  >>  8);
-	mI2C->writeByte(mDeviceAddress, LED0_OFF_L + channelOffset, off &  0xFF);
-	mI2C->writeByte(mDeviceAddress, LED0_OFF_H + channelOffset, off >>  8);
+	uint8_t buf[5] = {static_cast<uint8_t>(LED0_ON_L + 4 * channel),
+					  static_cast<uint8_t>(on  & 0xFF),
+					  static_cast<uint8_t>(on  >> 8),
+					  static_cast<uint8_t>(off & 0xFF),
+					  static_cast<uint8_t>(off >> 8)};
+	mI2C->writeData(mDeviceAddress, 5, buf);
 }
