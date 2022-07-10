@@ -30,8 +30,12 @@ include_directories(I2C/src)
 include_directories(src)
 
 # Build the actual library
-add_library(JetRacer SHARED src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/ContinuousServo.h src/ContinuousServo.cpp)
+add_library(JetRacer SHARED src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/ContinuousServo.h src/ContinuousServo.cpp src/Gamepad.h src/Gamepad.cpp)
 
 # add the test application
 add_executable(test_JetRacer tests/jetracer_app.cpp)
 target_link_libraries(test_JetRacer JetRacer I2C)
+
+# add the test application
+add_executable(test_JetRacer_Gamepad tests/jetracer_gamepad.cpp)
+target_link_libraries(test_JetRacer_Gamepad JetRacer I2C)
