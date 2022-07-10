@@ -22,7 +22,7 @@
 
 #include <cmath>
 #include <unistd.h>
-#include "I2C.h"
+#include <I2C.h>
 #include "PCA9685.h"
 
 #define MODE1              0x00
