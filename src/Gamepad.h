@@ -64,20 +64,6 @@ private:
 	 */
 	bool readEvent(struct js_event* event) const;
 
-	/**
-	 * Keeps track of the current axis state for mControlAxis.
-	 *
-	 * NOTE: This function assumes that axes are numbered starting from 0, and that
-	 * the X axis is an even number, and the Y axis is an odd number. However, this
-	 * is usually a safe assumption.
-	 *
-	 *  @param event the joystick event to process.
-	 *  @oaram[out] x the value on X axis.
-	 *  @param[out] y the value on Y axis.
-	 *  @return true if the update comes from the desired axis.
-	 */
-	bool getAxisState(const struct js_event* event, short& x, short& y) const;
-
 	/** Device ID. */
 	int mDevice;
 	/** Stop button number. */

@@ -64,10 +64,16 @@ void Gamepad::runEventLoop(NvidiaRacer& racer)
 				run = (event.number != mStopButton);
 				break;
 			case JS_EVENT_AXIS:
-				if (getAxisState(&event, x, y))
+				if (event.number / 2 == mControlAxis)
 				{
-					racer.setThrottle(static_cast<float>( y) / MAX_SHORT);
-					racer.setSteering(static_cast<float>(-x) / MAX_SHORT);
+			        if (event.number % 2 == 0)
+			        {
+			            racer.setSteering(static_cast<float>(-event.value) / MAX_SHORT);
+			        }
+			        else
+			        {
+						racer.setThrottle(static_cast<float>( event.value) / MAX_SHORT);
+			        }
 				}
 				break;
 			default:
@@ -81,21 +87,4 @@ void Gamepad::runEventLoop(NvidiaRacer& racer)
 bool Gamepad::readEvent(struct js_event* event) const
 {
     return read(mDevice, event, sizeof(*event)) == sizeof(*event);
-}
-
-bool Gamepad::getAxisState(const struct js_event* event, short& x, short& y) const
-{
-    if (event->number / 2 == mControlAxis)
-    {
-        if (event->number % 2 == 0)
-        {
-            x = event->value;
-        }
-        else
-        {
-            y = event->value;
-        }
-        return true;
-    }
-    return false;
 }
