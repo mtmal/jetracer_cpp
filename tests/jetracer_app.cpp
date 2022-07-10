@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
 	NvidiaRacer racer;
 	float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
-	puts("Initialising jetracer");
+	puts("Initialising NvidiaRacer");
 	if (racer.initialise())
 	{
         racer.setThrottleGain(0.3);
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		puts("Failed to initialise jetracer!!");
+		puts("Failed to initialise NvidiaRacer");
 	}
 	return 0;
 }

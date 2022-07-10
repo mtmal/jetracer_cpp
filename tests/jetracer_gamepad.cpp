@@ -29,11 +29,24 @@ int main(int argc, char *argv[])
 {
 	NvidiaRacer racer;
 	Gamepad gamepad;
-	puts("Initialising jetracer and gamepad");
-	if (racer.initialise() && gamepad.initialise())
+	puts("Initialising NvidiaRacer");
+	if (racer.initialise())
 	{
 		racer.setThrottleGain(0.3);
-		gamepad.runEventLoop(racer);
+		puts("Initialising Gamepad");
+		if (gamepad.initialise())
+		{
+			puts("Starting event loop");
+			gamepad.runEventLoop(racer);
+		}
+		else
+		{
+			puts("Failed to initialise Gamepad");
+		}
+	}
+	else
+	{
+		puts("Failed to initialise NvidiaRacer");
 	}
     return 0;
 }
