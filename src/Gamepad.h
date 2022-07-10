@@ -36,7 +36,7 @@ public:
 	 *  @param stopButton button ID which should be used to stop gamepad event loop.
 	 *  @param controlAxis axis ID used to control robot.
 	 */
-	Gamepad(const int stopButton = 2, const int controlAxis = 0);
+	Gamepad(const int stopButton = 0, const int controlAxis = 0);
 
 	/**
 	 * Basic destructor, closes joystick device.

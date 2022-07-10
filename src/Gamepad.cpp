@@ -66,8 +66,8 @@ void Gamepad::runEventLoop(NvidiaRacer& racer)
 			case JS_EVENT_AXIS:
 				if (getAxisState(&event, x, y))
 				{
-					racer.setThrottle(static_cast<float>(-y) / MAX_SHORT);
-					racer.setSteering(static_cast<float>( x) / MAX_SHORT);
+					racer.setThrottle(static_cast<float>( y) / MAX_SHORT);
+					racer.setSteering(static_cast<float>(-x) / MAX_SHORT);
 				}
 				break;
 			default:
