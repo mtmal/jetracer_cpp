@@ -32,7 +32,7 @@ int main()
 	puts("Initialising NvidiaRacer");
 	if (racer.initialise())
 	{
-		racer.setThrottleGain(0.3);
+		racer.setThrottleGain(0.5);
 		puts("Initialising Gamepad");
 		if (gamepad.initialise())
 		{
