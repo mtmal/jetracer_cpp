@@ -1,5 +1,5 @@
 # C++ Implementation of JetRacer
-A C++ implementation of Waveshare's JetRacer platform. It uses my own implementation I2C communication which is done in a separate repository (CMake will pull it). There are two test applications. One te$
+A C++ implementation of Waveshare's JetRacer platform. It uses my own implementation I2C communication which is done in a separate repository (CMake will pull it). There are two test applications. One tests basic motors movement and the other utilises gamepad.
 
 The code has been tested on Jetson Nano with JetPack 4.5.1.
 
