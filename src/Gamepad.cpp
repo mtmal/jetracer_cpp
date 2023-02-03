@@ -53,7 +53,6 @@ bool Gamepad::initialise(const char* device)
 void Gamepad::runEventLoop(NvidiaRacer& racer)
 {
 	struct js_event event;
-	short x, y;
 	bool run = true;
 
 	while (run && readEvent(&event))
@@ -66,14 +65,14 @@ void Gamepad::runEventLoop(NvidiaRacer& racer)
 			case JS_EVENT_AXIS:
 				if (event.number / 2 == mControlAxis)
 				{
-			        if (event.number % 2 == 0)
-			        {
-			            racer.setSteering(static_cast<float>(-event.value) / MAX_SHORT);
-			        }
-			        else
-			        {
+					if (event.number % 2 == 0)
+					{
+						racer.setSteering(static_cast<float>(-event.value) / MAX_SHORT);
+					}
+					else
+					{
 						racer.setThrottle(static_cast<float>( event.value) / MAX_SHORT);
-			        }
+					}
 				}
 				break;
 			default:

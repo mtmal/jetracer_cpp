@@ -25,7 +25,7 @@
 #include <Gamepad.h>
 #include <NvidiaRacer.h>
 
-int main(int argc, char *argv[])
+int main()
 {
 	NvidiaRacer racer;
 	Gamepad gamepad;

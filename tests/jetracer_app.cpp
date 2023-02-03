@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <NvidiaRacer.h>
 
-int main(int argc, char** argv)
+int main()
 {
 	NvidiaRacer racer;
 	float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
