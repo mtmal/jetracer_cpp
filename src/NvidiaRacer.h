@@ -23,8 +23,8 @@
 #ifndef NVIDIARACER_H_
 #define NVIDIARACER_H_
 
+#include <I2C.h>
 #include "ContinuousServo.h"
-#include "I2C.h"
 #include "PCA9685.h"
 
 class NvidiaRacer
