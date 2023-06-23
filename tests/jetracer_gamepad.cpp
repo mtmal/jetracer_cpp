@@ -21,14 +21,76 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdio>
+#include <semaphore.h>
 #include <unistd.h>
 #include <Gamepad.h>
 #include <NvidiaRacer.h>
 
+
+constexpr float MAX_SHORT = 32767.0f;
+
+class ControlCar : public GamepadListener
+{
+public:
+	ControlCar(sem_t* semaphore, NvidiaRacer& racer, Gamepad& gamepad, int stopButton = 0, int controlAxis = 0)
+		: mSemaphore(semaphore), mRacer(racer), mGamepad(gamepad), mStopButton(stopButton), mControlAxis(controlAxis)
+	{
+		mListenerId = mGamepad.registerListener(*this);
+	}
+
+	virtual ~ControlCar()
+	{
+		mGamepad.unregisterListener(mListenerId);
+	}
+
+	virtual void update(const GamepadEventData& eventData) const
+	{
+		if (eventData.mIsAxis)
+		{
+			if (eventData.mNumber / 2 == mControlAxis)
+			{
+				if (eventData.mNumber % 2 == 0)
+				{
+					mRacer.setSteering(static_cast<float>(-eventData.mValue) / MAX_SHORT);
+				}
+				else
+				{
+					mRacer.setThrottle(static_cast<float>( eventData.mValue) / MAX_SHORT);
+				}
+			}
+		}
+		else
+		{
+			if (eventData.mNumber == mStopButton)
+			{
+				mGamepad.stopEventThread();
+				sem_post(mSemaphore);
+			}
+		}
+	}
+
+private:
+	/** Pointer to semaphore that should be notified when stopping the application. */
+	sem_t* mSemaphore;
+	/** Reference to the Nvidia Racer class. */
+	NvidiaRacer& mRacer;
+	/** Reference to the gamepad class. */
+	Gamepad& mGamepad;
+	/** Stop button number. */
+	int mStopButton;
+	/** Axis used to control robot. */
+	int mControlAxis;
+	/** Listener ID. */
+	int mListenerId;
+};
+
 int main()
 {
+	sem_t semaphore;
 	NvidiaRacer racer;
 	Gamepad gamepad;
+	ControlCar controlCar(&semaphore, racer, gamepad);
+	sem_init(&semaphore, 0, 0);
 	puts("Initialising NvidiaRacer");
 	if (racer.initialise())
 	{
@@ -37,7 +99,11 @@ int main()
 		if (gamepad.initialise())
 		{
 			puts("Starting event loop");
-			gamepad.runEventLoop(racer);
+			if (gamepad.startEventThread())
+			{
+				puts("Event loop started.");
+				sem_wait(&semaphore);
+			}
 		}
 		else
 		{

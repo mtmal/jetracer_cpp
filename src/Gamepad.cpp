@@ -29,19 +29,37 @@
 #include "Gamepad.h"
 #include "NvidiaRacer.h"
 
-static constexpr float MAX_SHORT = 32767.0f;
-
-Gamepad::Gamepad(const int stopButton, const int controlAxis)
-: mDevice(0), mStopButton(stopButton), mControlAxis(controlAxis)
+namespace
 {
+class ScopedLock
+{
+public:
+	explicit ScopedLock(pthread_mutex_t& lock) : mLock(lock)
+	{
+		pthread_mutex_lock(&mLock);
+	}
+	virtual ~ScopedLock()
+	{
+		pthread_mutex_unlock(&mLock);
+	}
+private:
+	pthread_mutex_t& mLock;
+};
+} /* end of anonymous namespace */
+
+Gamepad::Gamepad() : mDevice(0), mRun(false), mEventThread(0)
+{
+	pthread_mutex_init(&mLock, nullptr);
 }
 
 Gamepad::~Gamepad()
 {
+	stopEventThread();
 	if (mDevice >= 0)
 	{
 		close(mDevice);
 	}
+	pthread_mutex_destroy(&mLock);
 }
 
 bool Gamepad::initialise(const char* device)
@@ -50,40 +68,95 @@ bool Gamepad::initialise(const char* device)
 	return mDevice >= 0;
 }
 
-void Gamepad::runEventLoop(NvidiaRacer& racer)
+bool Gamepad::startEventThread()
+{
+	bool retFlag = !mRun;
+	if (retFlag)
+	{
+		mRun = true;
+		retFlag = (0 == pthread_create(&mEventThread, nullptr, Gamepad::startEventThread, this));
+	}
+	else
+	{
+		puts("An event thread is already running!");
+	}
+	return retFlag;
+}
+
+void Gamepad::stopEventThread()
+{
+	mRun = false;
+    if (mEventThread > 0)
+    {
+    	pthread_join(mEventThread, nullptr);
+    	mEventThread = 0;
+    }
+}
+
+void Gamepad::runEventLoop()
 {
 	struct js_event event;
-	bool run = true;
+	GamepadEventData eventData;
 
-	while (run && readEvent(&event))
+	while (mRun)
 	{
-		switch (event.type)
+		if (readEvent(&event))
 		{
-			case JS_EVENT_BUTTON:
-				run = (event.number != mStopButton);
-				break;
-			case JS_EVENT_AXIS:
-				if (event.number / 2 == mControlAxis)
-				{
-					if (event.number % 2 == 0)
-					{
-						racer.setSteering(static_cast<float>(-event.value) / MAX_SHORT);
-					}
-					else
-					{
-						racer.setThrottle(static_cast<float>( event.value) / MAX_SHORT);
-					}
-				}
-				break;
-			default:
-				break;
+			switch (event.type)
+			{
+				case JS_EVENT_BUTTON:
+					// fall-through
+				case JS_EVENT_AXIS:
+					eventData.mIsAxis = (JS_EVENT_AXIS == event.type);
+					eventData.mNumber = event.number;
+					eventData.mValue = event.value;
+					notifyListeners(eventData);
+					break;
+				default:
+					break;
+			}
 		}
+		else
+		{
+			puts("Failed to process a gamepad event!");
+		}
+		usleep(10000);
 	}
-	racer.setThrottle(0);
-	racer.setSteering(0);
+}
+
+void* Gamepad::startEventThread(void* instance)
+{
+    Gamepad* gamepad = static_cast<Gamepad*>(instance);
+    gamepad->runEventLoop();
+    return nullptr;
 }
 
 bool Gamepad::readEvent(struct js_event* event) const
 {
     return read(mDevice, event, sizeof(*event)) == sizeof(*event);
+}
+
+int Gamepad::registerListener(const GamepadListener& listener)
+{
+	int id = rand();
+	ScopedLock lock(mLock);
+	mListerers.insert(std::pair<int, const GamepadListener&>(id, listener));
+	return id;
+}
+
+void Gamepad::unregisterListener(const int id)
+{
+	std::map<int, const GamepadListener&>::iterator it;
+	ScopedLock lock(mLock);
+	it = mListerers.find(id);
+	mListerers.erase(it);
+}
+
+void Gamepad::notifyListeners(const GamepadEventData& eventData)
+{
+	ScopedLock lock(mLock);
+	for (const std::pair<int, const GamepadListener&>& listener : mListerers)
+	{
+		listener.second.update(eventData);
+	}
 }

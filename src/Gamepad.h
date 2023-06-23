@@ -26,20 +26,48 @@
 #ifndef GAMEPAD_H_
 #define GAMEPAD_H_
 
-class NvidiaRacer;
+#include <atomic>
+#include <map>
+#include <pthread.h>
+
+
+/**
+ * A simple structure passing gamepad event data. It is baiscally a simplified version of js_event struct
+ * but without the need of including linux/joystick.h header file.
+ */
+struct GamepadEventData
+{
+	/* Flag indicating if the event comes from a axis (true) or button (false). */
+	char mIsAxis;
+	/* The number of axis/button that caused the event to trigger. */
+	char mNumber;
+	/* Value associated with triggered axis/button. */
+	short mValue;
+};
+
+/**
+ * A listener class for receiving gamepad updates.
+ */
+class GamepadListener
+{
+public:
+	/**
+	 * Updates the listener with the latest event data.
+	 *  @param eventData the latest event data received from gamepad.
+	 */
+	virtual void update(const GamepadEventData& eventData) const = 0;
+};
 
 class Gamepad
 {
 public:
 	/**
-	 * Basic constructor, only initialises variables.
-	 *  @param stopButton button ID which should be used to stop gamepad event loop.
-	 *  @param controlAxis axis ID used to control robot.
+	 * Basic constructor.
 	 */
-	Gamepad(const int stopButton = 0, const int controlAxis = 0);
+	Gamepad();
 
 	/**
-	 * Basic destructor, closes joystick device.
+	 * Basic destructor, stops the event thread and closes joystick device.
 	 */
 	virtual ~Gamepad();
 
@@ -51,12 +79,42 @@ public:
 	bool initialise(const char* device = "/dev/input/js0");
 
 	/**
-	 * Runs the main gamepad event loop and controls the racer.
-	 *  @param racer the racer class which steering and throttle will be controlled.
+	 * Starts the event thread.
+	 *  @return true if the thread was successfully started.
 	 */
-	void runEventLoop(NvidiaRacer& racer);
+	bool startEventThread();
+
+	/**
+	 * Stops the event thread.
+	 */
+	void stopEventThread();
+
+	/**
+	 * Runs the main gamepad event loop.
+	 */
+	void runEventLoop();
+
+	/**
+	 * Registers a listener to be triggered at the end of the main event loop.
+	 *  @param listener the listener to be registered.
+	 *  @return ID at which the listener was registered.
+	 */
+	int registerListener(const GamepadListener& listener);
+
+	/**
+	 * Removes the listener.
+	 *  @param id the ID at which the listener was registered.
+	 */
+	void unregisterListener(const int id);
 
 private:
+	/**
+	 * Start a thread that reads inputs from a gamepad.
+	 *  @param instance an instance of this class.
+	 *  @return nullptr
+	 */
+	static void* startEventThread(void* instance);
+
 	/**
 	 * Reads a joystick event from the joystick device.
 	 *  @param[out] event data read from the joystick.
@@ -64,12 +122,22 @@ private:
 	 */
 	bool readEvent(struct js_event* event) const;
 
+	/**
+	 * Notifies all listeners.
+	 *  @param data event data with which all listeners should be notified.
+	 */
+	void notifyListeners(const GamepadEventData& eventData);
+
 	/** Device ID. */
 	int mDevice;
-	/** Stop button number. */
-	int mStopButton;
-	/** Axis used to control robot. */
-	int mControlAxis;
+	/** Flag indicating if the event thread should run. */
+	std::atomic<bool> mRun;
+	/** The event thread. */
+	pthread_t mEventThread;
+	/** The list of listeners to be notified at the end of the main event loop. */
+	std::map<int, const GamepadListener&> mListerers;
+	/** Lock for accessing listeners list. */
+	pthread_mutex_t mLock;
 };
 
 #endif /* GAMEPAD_H_ */
