@@ -89,14 +89,7 @@ uint16_t PCA9685::getDutyCycle(const uint8_t channel) const
 {
 	uint16_t on, off;
 	getPWM(channel, on, off);
-	if (on == 0x1000)
-	{
-		return 0xFFFF;
-	}
-	else
-	{
-		return off << 4;
-	}
+	return (on == 0x1000) ? 0xFFFF : off << 4;
 }
 
 void PCA9685::setDutyCycle(const uint8_t channel, const uint16_t value) const
