@@ -29,7 +29,7 @@
 
 constexpr float MAX_SHORT = 32767.0f;
 
-class ControlCar : public GamepadListener
+class ControlCar : public IGenericListener<GamepadEventData>
 {
 public:
 	ControlCar(sem_t* semaphore, NvidiaRacer& racer, Gamepad& gamepad, int stopButton = 0, int controlAxis = 0)
@@ -114,6 +114,7 @@ int main()
 	{
 		puts("Failed to initialise NvidiaRacer");
 	}
+	puts("Finished");
     return 0;
 }
 

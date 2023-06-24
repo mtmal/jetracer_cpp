@@ -29,27 +29,8 @@
 #include "Gamepad.h"
 #include "NvidiaRacer.h"
 
-namespace
+Gamepad::Gamepad() : GenericTalker<GamepadEventData>(), mDevice(0), mRun(false), mEventThread(0)
 {
-class ScopedLock
-{
-public:
-	explicit ScopedLock(pthread_mutex_t& lock) : mLock(lock)
-	{
-		pthread_mutex_lock(&mLock);
-	}
-	virtual ~ScopedLock()
-	{
-		pthread_mutex_unlock(&mLock);
-	}
-private:
-	pthread_mutex_t& mLock;
-};
-} /* end of anonymous namespace */
-
-Gamepad::Gamepad() : mDevice(0), mRun(false), mEventThread(0)
-{
-	pthread_mutex_init(&mLock, nullptr);
 }
 
 Gamepad::~Gamepad()
@@ -59,7 +40,6 @@ Gamepad::~Gamepad()
 	{
 		close(mDevice);
 	}
-	pthread_mutex_destroy(&mLock);
 }
 
 bool Gamepad::initialise(const char* device)
@@ -134,29 +114,4 @@ void* Gamepad::startEventThread(void* instance)
 bool Gamepad::readEvent(struct js_event* event) const
 {
     return read(mDevice, event, sizeof(*event)) == sizeof(*event);
-}
-
-int Gamepad::registerListener(const GamepadListener& listener)
-{
-	int id = rand();
-	ScopedLock lock(mLock);
-	mListerers.insert(std::pair<int, const GamepadListener&>(id, listener));
-	return id;
-}
-
-void Gamepad::unregisterListener(const int id)
-{
-	std::map<int, const GamepadListener&>::iterator it;
-	ScopedLock lock(mLock);
-	it = mListerers.find(id);
-	mListerers.erase(it);
-}
-
-void Gamepad::notifyListeners(const GamepadEventData& eventData)
-{
-	ScopedLock lock(mLock);
-	for (const std::pair<int, const GamepadListener&>& listener : mListerers)
-	{
-		listener.second.update(eventData);
-	}
 }

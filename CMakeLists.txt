@@ -25,13 +25,19 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/I2C/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
+include_directories(src)
+
+# add the I2C submodule
 add_subdirectory(I2C)
 include_directories(I2C/src)
-include_directories(src)
+
+# add the jetracer utils submodule
+add_subdirectory(JetracerUtils)
+include_directories(JetracerUtils/src)
 
 # Build the actual library
 add_library(JetRacer SHARED src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/ContinuousServo.h src/ContinuousServo.cpp src/Gamepad.h src/Gamepad.cpp)
-target_link_libraries(JetRacer I2C pthread)
+target_link_libraries(JetRacer I2C JetracerUtils)
 
 # add the test application
 add_executable(test_JetRacer tests/jetracer_app.cpp)

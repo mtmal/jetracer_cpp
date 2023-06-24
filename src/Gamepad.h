@@ -27,8 +27,7 @@
 #define GAMEPAD_H_
 
 #include <atomic>
-#include <map>
-#include <pthread.h>
+#include <GenericTalker.h>
 
 
 /**
@@ -45,20 +44,7 @@ struct GamepadEventData
 	short mValue;
 };
 
-/**
- * A listener class for receiving gamepad updates.
- */
-class GamepadListener
-{
-public:
-	/**
-	 * Updates the listener with the latest event data.
-	 *  @param eventData the latest event data received from gamepad.
-	 */
-	virtual void update(const GamepadEventData& eventData) const = 0;
-};
-
-class Gamepad
+class Gamepad : public GenericTalker<GamepadEventData>
 {
 public:
 	/**
@@ -94,19 +80,6 @@ public:
 	 */
 	void runEventLoop();
 
-	/**
-	 * Registers a listener to be triggered at the end of the main event loop.
-	 *  @param listener the listener to be registered.
-	 *  @return ID at which the listener was registered.
-	 */
-	int registerListener(const GamepadListener& listener);
-
-	/**
-	 * Removes the listener.
-	 *  @param id the ID at which the listener was registered.
-	 */
-	void unregisterListener(const int id);
-
 private:
 	/**
 	 * Start a thread that reads inputs from a gamepad.
@@ -122,22 +95,12 @@ private:
 	 */
 	bool readEvent(struct js_event* event) const;
 
-	/**
-	 * Notifies all listeners.
-	 *  @param data event data with which all listeners should be notified.
-	 */
-	void notifyListeners(const GamepadEventData& eventData);
-
 	/** Device ID. */
 	int mDevice;
 	/** Flag indicating if the event thread should run. */
 	std::atomic<bool> mRun;
 	/** The event thread. */
 	pthread_t mEventThread;
-	/** The list of listeners to be notified at the end of the main event loop. */
-	std::map<int, const GamepadListener&> mListerers;
-	/** Lock for accessing listeners list. */
-	pthread_mutex_t mLock;
 };
 
 #endif /* GAMEPAD_H_ */

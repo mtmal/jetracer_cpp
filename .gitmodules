@@ -1,3 +1,6 @@
 [submodule "I2C"]
 	path = I2C
 	url = https://github.com/mtmal/I2C.git
+[submodule "JetracerUtils"]
+	path = JetracerUtils
+	url = git@github.com:mtmal/JetracerUtils.git
