@@ -1,6 +1,7 @@
 .cproject
 .project
 build
+.vscode/
 
 # Prerequisites
 *.d
