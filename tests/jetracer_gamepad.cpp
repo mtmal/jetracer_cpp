@@ -33,7 +33,11 @@ class ControlCar : public IGenericListener<GamepadEventData>
 {
 public:
 	ControlCar(sem_t* semaphore, NvidiaRacer& racer, Gamepad& gamepad, int stopButton = 0, int controlAxis = 0)
-		: mSemaphore(semaphore), mRacer(racer), mGamepad(gamepad), mStopButton(stopButton), mControlAxis(controlAxis)
+	: mSemaphore(semaphore), 
+	  mRacer(racer), 
+	  mGamepad(gamepad), 
+	  mStopButton(stopButton), 
+	  mControlAxis(controlAxis)
 	{
 		mListenerId = mGamepad.registerListener(*this);
 	}
@@ -43,7 +47,7 @@ public:
 		mGamepad.unregisterListener(mListenerId);
 	}
 
-	virtual void update(const GamepadEventData& eventData) const
+	void update(const GamepadEventData& eventData)
 	{
 		if (eventData.mIsAxis)
 		{
@@ -102,7 +106,10 @@ int main()
 			if (gamepad.startEventThread())
 			{
 				puts("Event loop started.");
-				sem_wait(&semaphore);
+				while (0 == sem_wait(&semaphore))
+				{
+					;
+				}
 			}
 		}
 		else

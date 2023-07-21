@@ -49,7 +49,9 @@
 
 static constexpr float REFERENCE_CLK_SPEED_SCALED = static_cast<float>(25000000.0 / 4096.0);
 
-PCA9685::PCA9685(const I2C* i2c, const uint8_t deviceAddress) : mI2C(i2c), mDeviceAddress(deviceAddress)
+PCA9685::PCA9685(const I2C* i2c, const uint8_t deviceAddress) 
+: mI2C(i2c), 
+  mDeviceAddress(deviceAddress)
 {
 }
 

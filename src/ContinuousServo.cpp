@@ -24,7 +24,10 @@
 #include "PCA9685.h"
 
 ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
-: mPCA9685(pca9685), mChannel(channel), mMinDuty(0), mDutyRange(0)
+: mPCA9685(pca9685), 
+  mChannel(channel), 
+  mMinDuty(0), 
+  mDutyRange(0)
 {
 }
 

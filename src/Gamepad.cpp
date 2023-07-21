@@ -29,7 +29,11 @@
 #include "Gamepad.h"
 #include "NvidiaRacer.h"
 
-Gamepad::Gamepad() : GenericTalker<GamepadEventData>(), mDevice(0), mRun(false), mEventThread(0)
+Gamepad::Gamepad() 
+: GenericTalker<GamepadEventData>(), 
+  mDevice(0), 
+  mRun(false), 
+  mEventThread(0)
 {
 }
 
@@ -78,7 +82,7 @@ void Gamepad::runEventLoop()
 	struct js_event event;
 	GamepadEventData eventData;
 
-	while (mRun)
+	while (mRun.load(std::memory_order_relaxed))
 	{
 		if (readEvent(&event))
 		{
