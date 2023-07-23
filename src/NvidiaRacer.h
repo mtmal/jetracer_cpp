@@ -23,11 +23,29 @@
 #ifndef NVIDIARACER_H_
 #define NVIDIARACER_H_
 
+#include <pthread.h>
 #include <I2C.h>
+#include <IGenericListener.h>
 #include "ContinuousServo.h"
 #include "PCA9685.h"
 
-class NvidiaRacer
+/**
+ * Structure with drive commands. Could be expanded in the future.
+ */
+struct DriveCommands
+{
+	/** Steering control for the racer, value from -1 to 1. */
+	float mSteering;
+	/** Throttle control for the racer, value from -1 to 1. */
+	float mThrottle;
+
+	/**
+	 * Basic constructor that initialises all values with zeros.
+	 */
+	DriveCommands() : mSteering(0.0f), mThrottle(0.0f) {};
+};
+
+class NvidiaRacer : public IGenericListener<DriveCommands>
 {
 public:
 	/**
@@ -53,10 +71,7 @@ public:
 	/**
 	 *  @return the steering value.
 	 */
-	inline float getSteering() const
-	{
-		return mSteering;
-	}
+	float getSteering() const;
 
 	/**
 	 *  @param steering sets the new steering value.
@@ -66,10 +81,7 @@ public:
 	/**
 	 *  @return the throttle value.
 	 */
-	inline float getThrottle() const
-	{
-		return mThrottle;
-	}
+	float getThrottle() const;
 
 	/**
 	 *  @param steering sets the new throttle value.
@@ -79,50 +91,37 @@ public:
 	/**
 	 *  @return steering gain
 	 */
-	inline float getSteeringGain() const
-	{
-		return mSteeringGain;
-	}
+	float getSteeringGain() const;
 
 	/**
 	 *  @param steeringGain new steering gain
 	 */
-	inline void setSteeringGain(const float steeringGain)
-	{
-		mSteeringGain = steeringGain;
-	}
+	void setSteeringGain(const float steeringGain);
 
 	/**
 	 *  @return steering offset
 	 */
-	inline float getSteeringOffset() const
-	{
-		return mSteeringOffset;
-	}
+	float getSteeringOffset() const;
 
 	/**
 	 *  @param steeringOffset new steering offset
 	 */
-	inline void setSteeringOffset(const float steeringOffset)
-	{
-		mSteeringOffset = steeringOffset;
-	}
+	void setSteeringOffset(const float steeringOffset);
 
 	/**
 	 *  @return throttle gain
 	 */
-	inline float getThrottleGain() const
-	{
-		return mThrottleGain;
-	}
+	float getThrottleGain() const;
 
 	/**
 	 *  @param throttleGain new throttle gain
 	 */
-	inline void setThrottleGain(const float throttleGain)
-	{
-		mThrottleGain = throttleGain;
-	}
+	void setThrottleGain(const float throttleGain);
+
+	/**
+	 *  @param driveCommands new drive commands for jetracer.
+	 */
+	void update(const DriveCommands& driveCommands);
 
 private:
 	/** Steering control for the racer, value from -1 to 1. */
@@ -143,6 +142,10 @@ private:
 	PCA9685 mSteeringPCA;
 	/** Object for controlling steering motor. */
 	ContinuousServo mServo;
+	/** Mutex for accessing steering. */
+	mutable pthread_mutex_t mSteeringMutex;
+	/** Mutex for accessing throttle. */
+	mutable pthread_mutex_t mThrottleMutex;
 };
 
 #endif /* NVIDIARACER_H_ */

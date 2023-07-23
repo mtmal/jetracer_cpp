@@ -21,6 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cmath>
+#include <ScopedLock.h>
 #include "NvidiaRacer.h"
 
 #define PCA9685_ADDRESS_1	0x40
@@ -48,16 +49,26 @@ NvidiaRacer::NvidiaRacer(const float steeringGain, const float steeringOffset, c
   mSteeringPCA(&mI2C, PCA9685_ADDRESS_1),
   mServo(&mSteeringPCA, 0)
 {
+	pthread_mutexattr_t attr;
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+	pthread_mutex_init(&mSteeringMutex, nullptr);
+	pthread_mutex_init(&mThrottleMutex, &attr);
 }
 
 NvidiaRacer::~NvidiaRacer()
 {
 	setSteering(0.0f);
 	setThrottle(0.0f);
+	pthread_mutex_destroy(&mSteeringMutex);
+	pthread_mutex_destroy(&mThrottleMutex);
 }
 
 bool NvidiaRacer::initialise(const char* devicePath)
 {
+	ScopedLock lock1(mSteeringMutex);
+	ScopedLock lock2(mThrottleMutex);
 	if (mI2C.openSerialPort(devicePath))
 	{
 		mThrottlePCA.reset();
@@ -69,18 +80,32 @@ bool NvidiaRacer::initialise(const char* devicePath)
 	return false;
 }
 
+float NvidiaRacer::getSteering() const
+{
+	ScopedLock lock(mSteeringMutex);
+	return mSteering;
+}
+
 void NvidiaRacer::setSteering(const float steering)
 {
+	ScopedLock lock(mSteeringMutex);
 	mSteering = clip(steering);
 	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
+float NvidiaRacer::getThrottle() const
+{
+	ScopedLock lock(mThrottleMutex);
+	return mThrottle;
+}
+
 void NvidiaRacer::setThrottle(const float throttle)
 {
+	ScopedLock lock(mThrottleMutex);
 	if ((mThrottle > 0 && throttle < 0) || (mThrottle < 0 && throttle > 0))
 	{
 		// we want to avoid going from positive to negative direction, and vice versa, without a stop.
-		setThrottle(0);
+		setThrottle(0); // it is ok to make a recursive call, because mThrottleMutex was configured as recursive mutex
 	}
 
 	mThrottle = clip(throttle);
@@ -106,4 +131,46 @@ void NvidiaRacer::setThrottle(const float throttle)
 		mThrottlePCA.setDutyCycle(6, 0);
 		mThrottlePCA.setDutyCycle(5, 0xFFFF);
 	}
+}
+
+float NvidiaRacer::getSteeringGain() const
+{
+	ScopedLock lock(mSteeringMutex);
+	return mSteeringGain;
+}
+
+void NvidiaRacer::setSteeringGain(const float steeringGain)
+{
+	ScopedLock lock(mSteeringMutex);
+	mSteeringGain = steeringGain;
+}
+
+float NvidiaRacer::getSteeringOffset() const
+{
+	ScopedLock lock(mSteeringMutex);
+	return mSteeringOffset;
+}
+
+void NvidiaRacer::setSteeringOffset(const float steeringOffset)
+{
+	ScopedLock lock(mSteeringMutex);
+	mSteeringOffset = steeringOffset;
+}
+
+float NvidiaRacer::getThrottleGain() const
+{
+	ScopedLock lock(mThrottleMutex);
+	return mThrottleGain;
+}
+
+void NvidiaRacer::setThrottleGain(const float throttleGain)
+{
+	ScopedLock lock(mThrottleMutex);
+	mThrottleGain = throttleGain;
+}
+
+void NvidiaRacer::update(const DriveCommands& driveCommands)
+{
+	setSteering(driveCommands.mSteering);
+	setThrottle(driveCommands.mThrottle);
 }
