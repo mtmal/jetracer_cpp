@@ -121,7 +121,7 @@ public:
 	/**
 	 *  @param driveCommands new drive commands for jetracer.
 	 */
-	void update(const DriveCommands& driveCommands);
+	void update(const DriveCommands& driveCommands) override;
 
 private:
 	/** Steering control for the racer, value from -1 to 1. */

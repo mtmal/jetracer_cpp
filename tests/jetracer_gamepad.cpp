@@ -47,7 +47,7 @@ public:
 		mGamepad.unregisterListener(mListenerId);
 	}
 
-	void update(const GamepadEventData& eventData)
+	void update(const GamepadEventData& eventData) override
 	{
 		if (eventData.mIsAxis)
 		{
