@@ -20,8 +20,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PCA9685_H_
-#define PCA9685_H_
+#pragma once
 
 #include <cstdint>
 
@@ -85,5 +84,3 @@ private:
 	/** The address of this PCA9685. */
 	const uint8_t mDeviceAddress;
 };
-
-#endif /* PCA9685_H_ */

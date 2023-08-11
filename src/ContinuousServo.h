@@ -20,8 +20,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CONTINUOUSSERVO_H_
-#define CONTINUOUSSERVO_H_
+#pragma once
 
 #include <cstdint>
 
@@ -82,5 +81,3 @@ private:
 	/** Duty range for the whole steering range. */
 	float mDutyRange;
 };
-
-#endif /* CONTINUOUSSERVO_H_ */

@@ -20,30 +20,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef NVIDIARACER_H_
-#define NVIDIARACER_H_
+#pragma once_
 
 #include <pthread.h>
 #include <I2C.h>
 #include <IGenericListener.h>
 #include "ContinuousServo.h"
+#include "DriveCommands.h"
 #include "PCA9685.h"
-
-/**
- * Structure with drive commands. Could be expanded in the future.
- */
-struct DriveCommands
-{
-	/** Steering control for the racer, value from -1 to 1. */
-	float mSteering;
-	/** Throttle control for the racer, value from -1 to 1. */
-	float mThrottle;
-
-	/**
-	 * Basic constructor that initialises all values with zeros.
-	 */
-	DriveCommands() : mSteering(0.0f), mThrottle(0.0f) {};
-};
 
 class NvidiaRacer : public IGenericListener<DriveCommands>
 {
@@ -113,8 +97,8 @@ public:
 	 */
 	float getThrottleGain() const;
 
-	/**
-	 *  @param throttleGain new throttle gain
+	/**#ifndef NVIDIARACER_H_
+#define NVIDIARACER_Hram throttleGain new throttle gain
 	 */
 	void setThrottleGain(const float throttleGain);
 
@@ -147,5 +131,3 @@ private:
 	/** Mutex for accessing throttle. */
 	mutable pthread_mutex_t mThrottleMutex;
 };
-
-#endif /* NVIDIARACER_H_ */

@@ -23,26 +23,12 @@
 // https://gist.github.com/jasonwhite/c5b2048c15993d285130#file-joystick-c
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GAMEPAD_H_
-#define GAMEPAD_H_
+#pragma once
 
 #include <atomic>
 #include <GenericTalker.h>
+#include "GamepadEventData.h"
 
-
-/**
- * A simple structure passing gamepad event data. It is baiscally a simplified version of js_event struct
- * but without the need of including linux/joystick.h header file.
- */
-struct GamepadEventData
-{
-	/* Flag indicating if the event comes from a axis (true) or button (false). */
-	char mIsAxis;
-	/* The number of axis/button that caused the event to trigger. */
-	char mNumber;
-	/* Value associated with triggered axis/button. */
-	short mValue;
-};
 
 class Gamepad : public GenericTalker<GamepadEventData>
 {
@@ -102,5 +88,3 @@ private:
 	/** The event thread. */
 	pthread_t mEventThread;
 };
-
-#endif /* GAMEPAD_H_ */
