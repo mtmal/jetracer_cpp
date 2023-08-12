@@ -24,6 +24,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <Gamepad.h>
+#include <GamepadDriveAdapter.h>
 #include <NvidiaRacer.h>
 
 
@@ -32,84 +33,62 @@ constexpr float MAX_SHORT = 32767.0f;
 class ControlCar : public IGenericListener<GamepadEventData>
 {
 public:
-	ControlCar(sem_t* semaphore, NvidiaRacer& racer, Gamepad& gamepad, int stopButton = 0, int controlAxis = 0)
-	: mSemaphore(semaphore), 
-	  mRacer(racer), 
-	  mGamepad(gamepad), 
-	  mStopButton(stopButton), 
-	  mControlAxis(controlAxis)
+	ControlCar(int stopButton = 0) : mStopButton(stopButton)
 	{
-		mListenerId = mGamepad.registerListener(*this);
+		sem_init(&mSemaphore, 0, 0);
 	}
 
 	virtual ~ControlCar()
 	{
-		mGamepad.unregisterListener(mListenerId);
+		sem_destroy(&mSemaphore);
+	}
+
+	inline sem_t* getSem()
+	{
+		return &mSemaphore;
 	}
 
 	void update(const GamepadEventData& eventData) override
 	{
-		if (eventData.mIsAxis)
+		if (eventData.mIsAxis == 0 && eventData.mNumber == mStopButton)
 		{
-			if (eventData.mNumber / 2 == mControlAxis)
-			{
-				if (eventData.mNumber % 2 == 0)
-				{
-					mRacer.setSteering(static_cast<float>(-eventData.mValue) / MAX_SHORT);
-				}
-				else
-				{
-					mRacer.setThrottle(static_cast<float>( eventData.mValue) / MAX_SHORT);
-				}
-			}
-		}
-		else
-		{
-			if (eventData.mNumber == mStopButton)
-			{
-				mGamepad.stopEventThread();
-				sem_post(mSemaphore);
-			}
+			sem_post(&mSemaphore);
 		}
 	}
 
 private:
 	/** Pointer to semaphore that should be notified when stopping the application. */
-	sem_t* mSemaphore;
-	/** Reference to the Nvidia Racer class. */
-	NvidiaRacer& mRacer;
-	/** Reference to the gamepad class. */
-	Gamepad& mGamepad;
+	sem_t mSemaphore;
 	/** Stop button number. */
 	int mStopButton;
-	/** Axis used to control robot. */
-	int mControlAxis;
-	/** Listener ID. */
-	int mListenerId;
 };
 
 int main()
 {
-	sem_t semaphore;
 	NvidiaRacer racer;
 	Gamepad gamepad;
-	ControlCar controlCar(&semaphore, racer, gamepad);
-	sem_init(&semaphore, 0, 0);
+	ControlCar controlCar;
+	GamepadDriveAdapter adapter;
+
 	puts("Initialising NvidiaRacer");
 	if (racer.initialise())
 	{
 		racer.setThrottleGain(0.5);
+		adapter.registerListener(racer);
 		puts("Initialising Gamepad");
 		if (gamepad.initialise())
 		{
+			gamepad.registerListener(controlCar);
+			gamepad.registerListener(adapter);
 			puts("Starting event loop");
 			if (gamepad.startEventThread())
 			{
 				puts("Event loop started.");
-				while (0 == sem_wait(&semaphore))
+				while (0 == sem_wait(controlCar.getSem()))
 				{
 					;
 				}
+				gamepad.stopEventThread();
 			}
 		}
 		else
@@ -124,5 +103,3 @@ int main()
 	puts("Finished");
     return 0;
 }
-
-

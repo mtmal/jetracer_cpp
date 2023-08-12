@@ -38,7 +38,7 @@ else()
 endif()
 
 # Build the actual library
-add_library(JetRacer SHARED src/NvidiaRacer.h src/NvidiaRacer.cpp src/PCA9685.h src/PCA9685.cpp src/ContinuousServo.h src/ContinuousServo.cpp src/Gamepad.h src/Gamepad.cpp)
+add_library(JetRacer SHARED src/NvidiaRacer.cpp src/PCA9685.cpp src/ContinuousServo.cpp src/Gamepad.cpp src/GamepadDriveAdapter.cpp)
 target_link_libraries(JetRacer I2C JetracerUtils)
 
 # add the test application
