@@ -84,7 +84,7 @@ int main()
 			if (gamepad.startEventThread())
 			{
 				puts("Event loop started.");
-				while (0 == sem_wait(controlCar.getSem()))
+				while (0 != sem_wait(controlCar.getSem()))
 				{
 					;
 				}
