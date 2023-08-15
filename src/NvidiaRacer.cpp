@@ -45,9 +45,15 @@ NvidiaRacer::NvidiaRacer(const float steeringGain, const float steeringOffset, c
   mSteeringOffset(steeringOffset),
   mThrottleGain(throttleGain),
   mI2C(),
+#ifdef JETRACER_PRO
+  mPCA(&mI2C, PCA9685_ADDRESS_1),
+  mThrottleMotor(&mPCA, 1),
+  mSteeringMotor(&mPCA, 0)
+#else
   mThrottlePCA(&mI2C, PCA9685_ADDRESS_2),
   mSteeringPCA(&mI2C, PCA9685_ADDRESS_1),
-  mServo(&mSteeringPCA, 0)
+  mSteeringMotor(&mSteeringPCA, 0)
+#endif
 {
 	pthread_mutexattr_t attr;
 	pthread_mutexattr_init(&attr);
@@ -71,10 +77,15 @@ bool NvidiaRacer::initialise(const char* devicePath)
 	ScopedLock lock2(mThrottleMutex);
 	if (mI2C.openSerialPort(devicePath))
 	{
+#ifdef JETRACER_PRO
+		mPCA.reset();
+		mThrottleMotor.initialise();
+#else
 		mThrottlePCA.reset();
 		mThrottlePCA.setFrequency(1600);
 		mSteeringPCA.reset();
-		mServo.initialise();
+#endif
+		mSteeringMotor.initialise();
 		return true;
 	}
 	return false;
@@ -90,7 +101,7 @@ void NvidiaRacer::setSteering(const float steering)
 {
 	ScopedLock lock(mSteeringMutex);
 	mSteering = clip(steering);
-	mServo.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
+	mSteeringMotor.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
 float NvidiaRacer::getThrottle() const
@@ -109,6 +120,9 @@ void NvidiaRacer::setThrottle(const float throttle)
 	}
 
 	mThrottle = clip(throttle);
+#ifdef JETRACER_PRO
+	mThrottleMotor.setThrottle(mThrottle * mThrottleGain);
+#else
 	if (mThrottle > 0)
 	{
 		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
@@ -131,6 +145,7 @@ void NvidiaRacer::setThrottle(const float throttle)
 		mThrottlePCA.setDutyCycle(6, 0);
 		mThrottlePCA.setDutyCycle(5, 0xFFFF);
 	}
+#endif
 }
 
 float NvidiaRacer::getSteeringGain() const

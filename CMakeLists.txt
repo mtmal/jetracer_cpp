@@ -5,6 +5,10 @@ project(JetRacer_Cpp)
 
 set(CMAKE_CXX_FLAGS "-fPIC -g -pedantic -Wall -Wextra")
 
+if(JETRACER_PRO) 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJETRACER_PRO=1")
+endif()
+
 include_directories(src)
 
 # add the I2C submodule

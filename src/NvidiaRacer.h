@@ -120,12 +120,19 @@ private:
 	float mThrottleGain;
 	/** Object for I2C communication. */
 	I2C mI2C;
+#ifdef JETRACER_PRO
+	/** PCA9685 board for controlling motors. */
+	PCA9685 mPCA;
+	/** Object for controlling throttle motor. */
+	ContinuousServo mThrottleMotor;
+#else
 	/** PCA9685 board which controls drive motors. */
 	PCA9685 mThrottlePCA;
 	/** PCA9685 board which controls steering motor. */
 	PCA9685 mSteeringPCA;
+#endif
 	/** Object for controlling steering motor. */
-	ContinuousServo mServo;
+	ContinuousServo mSteeringMotor;
 	/** Mutex for accessing steering. */
 	mutable pthread_mutex_t mSteeringMutex;
 	/** Mutex for accessing throttle. */
