@@ -30,7 +30,7 @@
 
 constexpr float MAX_SHORT = 32767.0f;
 
-class ControlCar : public IGenericListener<GamepadEventData>
+class ControlCar : public GenericListener<GamepadEventData>
 {
 public:
 	ControlCar(int stopButton = 0) : mStopButton(stopButton)
@@ -74,12 +74,12 @@ int main()
 	if (racer.initialise())
 	{
 		racer.setThrottleGain(0.5);
-		adapter.registerListener(racer);
+		static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(&racer);
 		puts("Initialising Gamepad");
 		if (gamepad.initialise())
 		{
-			gamepad.registerListener(controlCar);
-			gamepad.registerListener(adapter);
+			gamepad.registerTo(&controlCar);
+			gamepad.registerTo(static_cast<GenericListener<GamepadEventData>*>(&adapter));
 			puts("Starting event loop");
 			if (gamepad.startEventThread())
 			{

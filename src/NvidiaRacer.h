@@ -22,14 +22,13 @@
 
 #pragma once
 
-#include <pthread.h>
+#include <GenericListener.h>
 #include <I2C.h>
-#include <IGenericListener.h>
 #include "ContinuousServo.h"
 #include "DriveCommands.h"
 #include "PCA9685.h"
 
-class NvidiaRacer : public IGenericListener<DriveCommands>
+class NvidiaRacer : public GenericListener<DriveCommands>
 {
 public:
 	/**

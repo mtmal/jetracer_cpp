@@ -23,6 +23,7 @@
 // https://gist.github.com/jasonwhite/c5b2048c15993d285130#file-joystick-c
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/joystick.h>

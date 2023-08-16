@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cmath>
-#include <ScopedLock.h>
+#include <GenericTalker.h>
 #include "NvidiaRacer.h"
 
 #define PCA9685_ADDRESS_1	0x40

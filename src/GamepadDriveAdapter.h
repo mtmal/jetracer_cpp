@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <GenericListener.h>
 #include <GenericTalker.h>
 #include "DriveCommands.h"
 #include "GamepadEventData.h"
@@ -30,7 +31,7 @@
 /**
  * An adapter class which listens to gamepad updates and converts them into drive commands.
  */
-class GamepadDriveAdapter : public IGenericListener<GamepadEventData>,
+class GamepadDriveAdapter : public GenericListener<GamepadEventData>,
                             public GenericTalker<DriveCommands>
 {
 public:
