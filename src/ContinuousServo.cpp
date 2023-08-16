@@ -34,6 +34,8 @@ ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
 ContinuousServo::~ContinuousServo()
 {
 	setThrottle(0.0f);
+  // send zero pwm to release servo
+  mPCA9685->setDutyCycle(mChannel, 0);
 }
 
 void ContinuousServo::initialise(const int minPulse, const int maxPulse)
