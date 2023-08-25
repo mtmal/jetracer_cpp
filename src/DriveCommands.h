@@ -31,6 +31,9 @@ struct DriveCommands
 
 	/**
 	 * Basic constructor that initialises all values with zeros.
+	 *  @param steering initial steering value.
+	 *  @param throttle initial throttle value.
 	 */
-	DriveCommands() : mSteering(0.0f), mThrottle(0.0f) {};
+	DriveCommands(const float steering = 0.0f, const float throttle = 0.0f) 
+	  : mSteering(steering), mThrottle(throttle) {};
 };

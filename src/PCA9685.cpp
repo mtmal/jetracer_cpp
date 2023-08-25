@@ -72,11 +72,10 @@ float PCA9685::getFrequency() const
 
 void PCA9685::setFrequency(const float frequency) const
 {
-	uint8_t oldMode;
 	uint8_t prescale = static_cast<uint8_t>(std::round(REFERENCE_CLK_SPEED_SCALED / frequency)) - 1;
 	if (prescale >= 3)
 	{
-		oldMode = mI2C->readByte(mDeviceAddress, MODE1); // Mode 1
+		uint8_t oldMode = mI2C->readByte(mDeviceAddress, MODE1); // Mode 1
 		mI2C->writeByte(mDeviceAddress, MODE1, (oldMode & 0x7F) | SLEEP); // Mode 1, sleep
 		mI2C->writeByte(mDeviceAddress, PRESCALE, prescale); // Prescale
 		mI2C->writeByte(mDeviceAddress, MODE1, oldMode); // Mode 1

@@ -43,15 +43,16 @@ void GamepadDriveAdapter::update(const GamepadEventData& eventData)
         if (eventData.mNumber == mSteeringAxis)
         {
             mDriveCommand.mSteering = static_cast<float>(-eventData.mValue) / MAX_SHORT;
+            notifyListeners(mDriveCommand);
         }
         else if (eventData.mNumber == mThrottleAxis)
         {
             mDriveCommand.mThrottle = static_cast<float>( eventData.mValue) / MAX_SHORT;
+            notifyListeners(mDriveCommand);
         }
         else
         {
             // nothing to do in here
         }
-        notifyListeners(mDriveCommand);
     }
 }

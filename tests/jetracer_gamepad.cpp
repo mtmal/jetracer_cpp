@@ -66,18 +66,17 @@ private:
 int main()
 {
 	NvidiaRacer racer;
-	Gamepad gamepad;
-	ControlCar controlCar;
-	GamepadDriveAdapter adapter;
-
 	puts("Initialising NvidiaRacer");
 	if (racer.initialise())
 	{
+		Gamepad gamepad;
+		GamepadDriveAdapter adapter;
 		racer.setThrottleGain(0.5);
 		static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(&racer);
 		puts("Initialising Gamepad");
 		if (gamepad.initialise())
 		{
+			ControlCar controlCar;
 			gamepad.registerTo(&controlCar);
 			gamepad.registerTo(static_cast<GenericListener<GamepadEventData>*>(&adapter));
 			puts("Starting event loop");

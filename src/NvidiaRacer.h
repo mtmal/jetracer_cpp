@@ -96,8 +96,8 @@ public:
 	 */
 	float getThrottleGain() const;
 
-	/**#ifndef NVIDIARACER_H_
-#define NVIDIARACER_Hram throttleGain new throttle gain
+	/**
+	 *  @param throttleGain new throttle gain
 	 */
 	void setThrottleGain(const float throttleGain);
 
