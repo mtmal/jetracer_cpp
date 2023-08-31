@@ -9,16 +9,13 @@ if(JETRACER_PRO)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJETRACER_PRO=1")
 endif()
 
-include_directories(src)
-
-# add the I2C submodule
-add_subdirectory(I2C)
-include_directories(I2C/src)
-
-if(CUSTOM_JETRACER_UTILS)
+if(CUSTOM_JETRACER_UTILS AND CUSTOM_I2C)
     include(CMakePrintHelpers)
     cmake_print_variables(CUSTOM_JETRACER_UTILS)
     include_directories(${CUSTOM_JETRACER_UTILS}/src)
+
+    cmake_print_variables(CUSTOM_I2C)
+    include_directories(${CUSTOM_I2C}/src)
 else()
     # make sure we have the necessary submodule
     find_package(Git QUIET)
@@ -36,10 +33,16 @@ else()
         endif()
     endif()
 
+    # add the I2C submodule
+    add_subdirectory(I2C)
+    include_directories(I2C/src)
+
     # add the jetracer utils submodule
     add_subdirectory(JetracerUtils)
     include_directories(JetracerUtils/src)
 endif()
+
+include_directories(src)
 
 # Build the actual library
 add_library(JetRacer SHARED src/NvidiaRacer.cpp src/PCA9685.cpp src/ContinuousServo.cpp src/Gamepad.cpp src/GamepadDriveAdapter.cpp)
