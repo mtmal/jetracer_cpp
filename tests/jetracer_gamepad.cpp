@@ -80,14 +80,13 @@ int main()
 			gamepad.registerTo(&controlCar);
 			gamepad.registerTo(static_cast<GenericListener<GamepadEventData>*>(&adapter));
 			puts("Starting event loop");
-			if (gamepad.startEventThread())
+			if (gamepad.startThread())
 			{
 				puts("Event loop started.");
 				while (0 != sem_wait(controlCar.getSem()))
 				{
 					;
 				}
-				gamepad.stopEventThread();
 			}
 		}
 		else

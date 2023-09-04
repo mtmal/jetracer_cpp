@@ -31,16 +31,15 @@
 #include "NvidiaRacer.h"
 
 Gamepad::Gamepad() 
-: GenericTalker<GamepadEventData>(), 
-  mDevice(0), 
-  mRun(false), 
-  mEventThread(0)
+: GenericTalker<GamepadEventData>(),
+  GenericThread<Gamepad>(),
+  mDevice(0)
 {
 }
 
 Gamepad::~Gamepad()
 {
-	stopEventThread();
+	stopThread();
 	if (mDevice >= 0)
 	{
 		close(mDevice);
@@ -53,37 +52,12 @@ bool Gamepad::initialise(const char* device)
 	return mDevice >= 0;
 }
 
-bool Gamepad::startEventThread()
-{
-	bool retFlag = !mRun;
-	if (retFlag)
-	{
-		mRun = true;
-		retFlag = (0 == pthread_create(&mEventThread, nullptr, Gamepad::startEventThread, this));
-	}
-	else
-	{
-		puts("An event thread is already running!");
-	}
-	return retFlag;
-}
-
-void Gamepad::stopEventThread()
-{
-	mRun = false;
-    if (mEventThread > 0)
-    {
-    	pthread_join(mEventThread, nullptr);
-    	mEventThread = 0;
-    }
-}
-
-void Gamepad::runEventLoop()
+void* Gamepad::theadBody()
 {
 	struct js_event event;
 	GamepadEventData eventData;
 
-	while (mRun.load(std::memory_order_relaxed))
+	while (isRunning())
 	{
 		if (readEvent(&event))
 		{
@@ -107,13 +81,7 @@ void Gamepad::runEventLoop()
 		}
 		usleep(10000);
 	}
-}
-
-void* Gamepad::startEventThread(void* instance)
-{
-    Gamepad* gamepad = static_cast<Gamepad*>(instance);
-    gamepad->runEventLoop();
-    return nullptr;
+	return nullptr;
 }
 
 bool Gamepad::readEvent(struct js_event* event) const

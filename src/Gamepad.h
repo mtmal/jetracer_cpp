@@ -25,12 +25,13 @@
 
 #pragma once
 
-#include <atomic>
 #include <GenericTalker.h>
+#include <GenericThread.h>
 #include "GamepadEventData.h"
 
 
-class Gamepad : public GenericTalker<GamepadEventData>
+class Gamepad : public GenericTalker<GamepadEventData>,
+				public GenericThread<Gamepad>
 {
 public:
 	/**
@@ -51,29 +52,12 @@ public:
 	bool initialise(const char* device = "/dev/input/js0");
 
 	/**
-	 * Starts the event thread.
-	 *  @return true if the thread was successfully started.
-	 */
-	bool startEventThread();
-
-	/**
-	 * Stops the event thread.
-	 */
-	void stopEventThread();
-
-	/**
 	 * Runs the main gamepad event loop.
-	 */
-	void runEventLoop();
-
-private:
-	/**
-	 * Start a thread that reads inputs from a gamepad.
-	 *  @param instance an instance of this class.
 	 *  @return nullptr
 	 */
-	static void* startEventThread(void* instance);
+	void* theadBody();
 
+private:
 	/**
 	 * Reads a joystick event from the joystick device.
 	 *  @param[out] event data read from the joystick.
@@ -83,8 +67,4 @@ private:
 
 	/** Device ID. */
 	int mDevice;
-	/** Flag indicating if the event thread should run. */
-	std::atomic<bool> mRun;
-	/** The event thread. */
-	pthread_t mEventThread;
 };
