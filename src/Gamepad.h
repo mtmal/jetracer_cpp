@@ -55,7 +55,7 @@ public:
 	 * Runs the main gamepad event loop.
 	 *  @return nullptr
 	 */
-	void* theadBody();
+	void* threadBody();
 
 private:
 	/**

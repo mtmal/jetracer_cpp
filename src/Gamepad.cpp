@@ -52,7 +52,7 @@ bool Gamepad::initialise(const char* device)
 	return mDevice >= 0;
 }
 
-void* Gamepad::theadBody()
+void* Gamepad::threadBody()
 {
 	struct js_event event;
 	GamepadEventData eventData;
