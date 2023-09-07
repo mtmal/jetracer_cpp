@@ -20,7 +20,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cstdio>
 #include <cmath>
 #include <GenericTalker.h>
 #include "NvidiaRacer.h"
@@ -103,8 +102,6 @@ void NvidiaRacer::setSteering(const float steering)
 {
 	ScopedLock lock(mSteeringMutex);
 	mSteering = clip(steering);
-	printf("Setting steering values \n");
-	printf("mSteering=%f, throttle=%f \n", mSteering, mSteering * mSteeringGain + mSteeringOffset);
 	mSteeringMotor.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
