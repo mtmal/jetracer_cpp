@@ -57,10 +57,34 @@ public:
 	 */
 	void setFrequency(const float frequency) const;
 
-	/* 16 bit value that dictates how much of one cycle is high (1) versus low (0). 0xffff will
-	   always be high, 0 will always be low and 0x7fff will be half high and then half low.*/
+	/** 
+	 * 12 bit value that dictates how much of one cycle is high (1) versus low (0). 0x0FFF will
+	 * always be high, 0 will always be low and 0x07FF will be half high and then half low. Note,
+	 * if aiming for controlling the pins as GPIO, use the other method.
+	 *  @param channel the channel to control (0-15).
+	 *  @param value ratio of how much of the tick should start with high state.
+	 */
+	inline void setDutyCycle(const uint8_t channel, const uint16_t value) const
+	{
+		setPWM(channel, 0, value & 0x0FFF);
+	}
+
+	/**
+	 * Returns the current duty cycle for a given @p channel.
+	 *  @param channel the channel to query (0-15).
+	 *  @return a 12-bit value.
+	 */
 	uint16_t getDutyCycle(const uint8_t channel) const;
-	void setDutyCycle(const uint8_t channel, const uint16_t value) const;
+
+	/**
+	 * Sets a pin to be either fully on or fully off. 
+	 *  @param channel the channel to control (0-15).
+	 *  @param on true to set the @p channel full on.
+	 */
+	inline void setGPIO(const uint8_t channel, const bool on) const
+	{
+		setPWM(channel, 0x1000 * on, 0x1000 * !on);
+	}
 
 private:
 	/**

@@ -20,6 +20,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cstdio>
 #include <cmath>
 #include <GenericTalker.h>
 #include "NvidiaRacer.h"
@@ -84,6 +85,7 @@ bool NvidiaRacer::initialise(const char* devicePath)
 		mThrottlePCA.reset();
 		mThrottlePCA.setFrequency(1600);
 		mSteeringPCA.reset();
+		mSteeringPCA.setFrequency(50);
 #endif
 		mSteeringMotor.initialise();
 		return true;
@@ -101,6 +103,8 @@ void NvidiaRacer::setSteering(const float steering)
 {
 	ScopedLock lock(mSteeringMutex);
 	mSteering = clip(steering);
+	printf("Setting steering values \n");
+	printf("mSteering=%f, throttle=%f \n", mSteering, mSteering * mSteeringGain + mSteeringOffset);
 	mSteeringMotor.setThrottle(mSteering * mSteeringGain + mSteeringOffset);
 }
 
@@ -125,25 +129,25 @@ void NvidiaRacer::setThrottle(const float throttle)
 #else
 	if (mThrottle > 0)
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
-		mThrottlePCA.setDutyCycle(1, 0xFFFF);
-		mThrottlePCA.setDutyCycle(2, 0);
-		mThrottlePCA.setDutyCycle(3, 0);
-		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain *  0xFFFF));
-		mThrottlePCA.setDutyCycle(6, 0xFFFF);
-		mThrottlePCA.setDutyCycle(5, 0);
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
+		mThrottlePCA.setGPIO(1, true);
+		mThrottlePCA.setGPIO(2, false);
+		mThrottlePCA.setGPIO(3, false);
+		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
+		mThrottlePCA.setGPIO(5, false);
+		mThrottlePCA.setGPIO(6, true);
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
 	}
 	else
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
-		mThrottlePCA.setDutyCycle(1, 0);
-		mThrottlePCA.setDutyCycle(2, 0xFFFF);
-		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
-		mThrottlePCA.setDutyCycle(4, 0);
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain * -0xFFFF));
-		mThrottlePCA.setDutyCycle(6, 0);
-		mThrottlePCA.setDutyCycle(5, 0xFFFF);
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
+		mThrottlePCA.setGPIO(1, false);
+		mThrottlePCA.setGPIO(2, true);
+		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
+		mThrottlePCA.setGPIO(4, false);
+		mThrottlePCA.setGPIO(5, true);
+		mThrottlePCA.setGPIO(6, false);
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
 	}
 #endif
 }

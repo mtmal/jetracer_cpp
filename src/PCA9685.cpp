@@ -20,7 +20,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cmath>
 #include <unistd.h>
 #include <I2C.h>
 #include "PCA9685.h"
@@ -57,6 +56,10 @@ PCA9685::PCA9685(const I2C* i2c, const uint8_t deviceAddress)
 
 PCA9685::~PCA9685()
 {
+	mI2C->writeByte(mDeviceAddress, ALL_LED_ON_L , 0);
+	mI2C->writeByte(mDeviceAddress, ALL_LED_ON_H , 0);
+	mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_L, 0);
+	mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_H, 0x10);
 	reset();
 }
 
@@ -72,7 +75,7 @@ float PCA9685::getFrequency() const
 
 void PCA9685::setFrequency(const float frequency) const
 {
-	uint8_t prescale = static_cast<uint8_t>(std::round(REFERENCE_CLK_SPEED_SCALED / frequency)) - 1;
+	uint8_t prescale = static_cast<uint8_t>(REFERENCE_CLK_SPEED_SCALED / frequency + 0.5f) - 1;
 	if (prescale >= 3)
 	{
 		uint8_t oldMode = mI2C->readByte(mDeviceAddress, MODE1); // Mode 1
@@ -90,19 +93,7 @@ uint16_t PCA9685::getDutyCycle(const uint8_t channel) const
 {
 	uint16_t on, off;
 	getPWM(channel, on, off);
-	return (on == 0x1000) ? 0xFFFF : off << 4;
-}
-
-void PCA9685::setDutyCycle(const uint8_t channel, const uint16_t value) const
-{
-	if (value == 0xFFFF)
-	{
-		setPWM(channel, 0x1000, 0);
-	}
-	else
-	{
-		setPWM(channel, 0, (value + 1) >> 4);
-	}
+	return (on == 0x1000) ? on : off;
 }
 
 void PCA9685::getPWM(const uint8_t channel, uint16_t& on, uint16_t& off) const

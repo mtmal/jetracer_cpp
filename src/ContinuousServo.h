@@ -77,7 +77,7 @@ private:
 	/** A PCA9685 channel to which this servo is connected. */
 	uint8_t mChannel;
 	/** A minimum PWM duty for steering control. */
-	uint16_t mMinDuty;
+	float mMinDuty;
 	/** Duty range for the whole steering range. */
 	float mDutyRange;
 };

@@ -23,6 +23,9 @@
 #include "ContinuousServo.h"
 #include "PCA9685.h"
 
+static constexpr float OFFSET = 0x0FFF / 1000000.0f;
+
+
 ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
 : mPCA9685(pca9685), 
   mChannel(channel), 
@@ -34,21 +37,19 @@ ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
 ContinuousServo::~ContinuousServo()
 {
 	setThrottle(0.0f);
-  // send zero pwm to release servo
-  mPCA9685->setDutyCycle(mChannel, 0);
 }
 
 void ContinuousServo::initialise(const int minPulse, const int maxPulse)
 {
-	float frequency  = mPCA9685->getFrequency();
-	uint16_t maxDuty = static_cast<uint16_t>((static_cast<float>(maxPulse) * frequency) / 1000000.0f * 0xFFFF);
-	mMinDuty   		 = static_cast<uint16_t>((static_cast<float>(minPulse) * frequency) / 1000000.0f * 0xFFFF);
-	mDutyRange 		 = static_cast<float>(maxDuty - mMinDuty);
+	float frequency = mPCA9685->getFrequency();
+	float maxDuty   = static_cast<float>(maxPulse) * frequency * OFFSET;
+	mMinDuty        = static_cast<float>(minPulse) * frequency * OFFSET;
+	mDutyRange 	    = maxDuty - mMinDuty;
 }
 
 void ContinuousServo::setFraction(const float fraction) const
 {
-	mPCA9685->setDutyCycle(mChannel, mMinDuty + static_cast<uint16_t>(fraction * mDutyRange));
+	mPCA9685->setDutyCycle(mChannel, static_cast<uint16_t>(mMinDuty + fraction * mDutyRange + 0.5f));
 }
 
 float ContinuousServo::getFraction() const
