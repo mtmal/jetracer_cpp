@@ -59,7 +59,7 @@ void* Gamepad::threadBody()
 
 	while (isRunning())
 	{
-		if (readEvent(&event))
+		if (read(mDevice, &event, sizeof(event)) == sizeof(event))
 		{
 			switch (event.type)
 			{
@@ -82,9 +82,4 @@ void* Gamepad::threadBody()
 		usleep(10000);
 	}
 	return nullptr;
-}
-
-bool Gamepad::readEvent(struct js_event* event) const
-{
-    return read(mDevice, event, sizeof(*event)) == sizeof(*event);
 }

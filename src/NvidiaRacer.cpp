@@ -126,25 +126,25 @@ void NvidiaRacer::setThrottle(const float throttle)
 #else
 	if (mThrottle > 0)
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF + 0.5f));
 		mThrottlePCA.setGPIO(1, true);
 		mThrottlePCA.setGPIO(2, false);
 		mThrottlePCA.setGPIO(3, false);
-		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
+		mThrottlePCA.setDutyCycle(4, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF + 0.5f));
 		mThrottlePCA.setGPIO(5, false);
 		mThrottlePCA.setGPIO(6, true);
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF));
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain *  0x0FFF + 0.5f));
 	}
 	else
 	{
-		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
+		mThrottlePCA.setDutyCycle(0, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF + 0.5f));
 		mThrottlePCA.setGPIO(1, false);
 		mThrottlePCA.setGPIO(2, true);
-		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
+		mThrottlePCA.setDutyCycle(3, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF + 0.5f));
 		mThrottlePCA.setGPIO(4, false);
 		mThrottlePCA.setGPIO(5, true);
 		mThrottlePCA.setGPIO(6, false);
-		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF));
+		mThrottlePCA.setDutyCycle(7, static_cast<uint16_t>(mThrottle * mThrottleGain * -0x0FFF + 0.5f));
 	}
 #endif
 }

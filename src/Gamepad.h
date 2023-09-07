@@ -58,13 +58,6 @@ public:
 	void* threadBody();
 
 private:
-	/**
-	 * Reads a joystick event from the joystick device.
-	 *  @param[out] event data read from the joystick.
-	 *  @return true on success.
-	 */
-	bool readEvent(struct js_event* event) const;
-
 	/** Device ID. */
 	int mDevice;
 };
