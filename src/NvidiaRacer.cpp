@@ -114,7 +114,7 @@ float NvidiaRacer::getThrottle() const
 void NvidiaRacer::setThrottle(const float throttle)
 {
 	ScopedLock lock(mThrottleMutex);
-	if ((mThrottle > 0 && throttle < 0) || (mThrottle < 0 && throttle > 0))
+	if (std::signbit(throttle) != std::signbit(mThrottle) && std::abs(throttle) > std::numeric_limits<float>::epsilon())
 	{
 		// we want to avoid going from positive to negative direction, and vice versa, without a stop.
 		setThrottle(0); // it is ok to make a recursive call, because mThrottleMutex was configured as recursive mutex
