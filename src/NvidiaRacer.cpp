@@ -158,7 +158,7 @@ float NvidiaRacer::getSteeringGain() const
 void NvidiaRacer::setSteeringGain(const float steeringGain)
 {
 	ScopedLock lock(mSteeringMutex);
-	mSteeringGain = steeringGain;
+	mSteeringGain = clip(steeringGain);
 }
 
 float NvidiaRacer::getSteeringOffset() const
@@ -182,7 +182,7 @@ float NvidiaRacer::getThrottleGain() const
 void NvidiaRacer::setThrottleGain(const float throttleGain)
 {
 	ScopedLock lock(mThrottleMutex);
-	mThrottleGain = throttleGain;
+	mThrottleGain = clip(throttleGain);
 }
 
 void NvidiaRacer::update(const DriveCommands& driveCommands)
