@@ -79,7 +79,6 @@ void* Gamepad::threadBody()
 		{
 			puts("Failed to process a gamepad event!");
 		}
-		usleep(10000);
 	}
 	return nullptr;
 }
