@@ -6,4 +6,4 @@
 	url = git@github.com:mtmal/JetracerUtils.git
 [submodule "GamepadController"]
 	path = GamepadController
-	url = https://github.com/mtmal/gamepad_controller
+	url = https://github.com/mtmal/gamepad-controller
