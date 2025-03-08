@@ -7,3 +7,6 @@
 [submodule "GamepadController"]
 	path = GamepadController
 	url = https://github.com/mtmal/gamepad-controller
+[submodule "MotorController"]
+	path = MotorController
+	url = https://github.com/mtmal/motor-controller/
