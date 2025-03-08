@@ -39,46 +39,46 @@ Gamepad::Gamepad()
 
 Gamepad::~Gamepad()
 {
-	stopThread();
-	if (mDevice >= 0)
-	{
-		close(mDevice);
-	}
+    stopThread();
+    if (mDevice >= 0)
+    {
+        close(mDevice);
+    }
 }
 
 bool Gamepad::initialise(const char* device)
 {
-	mDevice = open(device, O_RDONLY);
-	return mDevice >= 0;
+    mDevice = open(device, O_RDONLY);
+    return mDevice >= 0;
 }
 
 void* Gamepad::threadBody()
 {
-	struct js_event event;
-	GamepadEventData eventData;
+    struct js_event event;
+    GamepadEventData eventData;
 
-	while (isRunning())
-	{
-		if (read(mDevice, &event, sizeof(event)) == sizeof(event))
-		{
-			switch (event.type)
-			{
-				case JS_EVENT_BUTTON:
-					// fall-through
-				case JS_EVENT_AXIS:
-					eventData.mIsAxis = (JS_EVENT_AXIS == event.type);
-					eventData.mNumber = event.number;
-					eventData.mValue = event.value;
-					notifyListeners(eventData);
-					break;
-				default:
-					break;
-			}
-		}
-		else
-		{
-			puts("Failed to process a gamepad event!");
-		}
-	}
-	return nullptr;
+    while (isRunning())
+    {
+        if (read(mDevice, &event, sizeof(event)) == sizeof(event))
+        {
+            switch (event.type)
+            {
+                case JS_EVENT_BUTTON:
+                    // fall-through
+                case JS_EVENT_AXIS:
+                    eventData.mIsAxis = (JS_EVENT_AXIS == event.type);
+                    eventData.mNumber = event.number;
+                    eventData.mValue = event.value;
+                    notifyListeners(eventData);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            puts("Failed to process a gamepad event!");
+        }
+    }
+    return nullptr;
 }

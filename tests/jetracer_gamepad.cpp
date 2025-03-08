@@ -33,71 +33,71 @@ constexpr float MAX_SHORT = 32767.0f;
 class ControlCar : public GenericListener<GamepadEventData>
 {
 public:
-	ControlCar(int stopButton = 0) : mStopButton(stopButton)
-	{
-		sem_init(&mSemaphore, 0, 0);
-	}
+    ControlCar(int stopButton = 0) : mStopButton(stopButton)
+    {
+        sem_init(&mSemaphore, 0, 0);
+    }
 
-	virtual ~ControlCar()
-	{
-		sem_destroy(&mSemaphore);
-	}
+    virtual ~ControlCar()
+    {
+        sem_destroy(&mSemaphore);
+    }
 
-	inline sem_t* getSem()
-	{
-		return &mSemaphore;
-	}
+    inline sem_t* getSem()
+    {
+        return &mSemaphore;
+    }
 
-	void update(const GamepadEventData& eventData) override
-	{
-		if (eventData.mIsAxis == 0 && eventData.mNumber == mStopButton)
-		{
-			sem_post(&mSemaphore);
-		}
-	}
+    void update(const GamepadEventData& eventData) override
+    {
+        if (eventData.mIsAxis == 0 && eventData.mNumber == mStopButton)
+        {
+            sem_post(&mSemaphore);
+        }
+    }
 
 private:
-	/** Pointer to semaphore that should be notified when stopping the application. */
-	sem_t mSemaphore;
-	/** Stop button number. */
-	int mStopButton;
+    /** Pointer to semaphore that should be notified when stopping the application. */
+    sem_t mSemaphore;
+    /** Stop button number. */
+    int mStopButton;
 };
 
 int main()
 {
-	NvidiaRacer racer;
-	puts("Initialising NvidiaRacer");
-	if (racer.initialise())
-	{
-		Gamepad gamepad;
-		GamepadDriveAdapter adapter;
-		racer.setThrottleGain(0.5);
-		static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(&racer);
-		puts("Initialising Gamepad");
-		if (gamepad.initialise())
-		{
-			ControlCar controlCar;
-			gamepad.registerTo(&controlCar);
-			gamepad.registerTo(static_cast<GenericListener<GamepadEventData>*>(&adapter));
-			puts("Starting event loop");
-			if (gamepad.startThread())
-			{
-				puts("Event loop started.");
-				while (0 != sem_wait(controlCar.getSem()))
-				{
-					;
-				}
-			}
-		}
-		else
-		{
-			puts("Failed to initialise Gamepad");
-		}
-	}
-	else
-	{
-		puts("Failed to initialise NvidiaRacer");
-	}
-	puts("Finished");
+    NvidiaRacer racer;
+    puts("Initialising NvidiaRacer");
+    if (racer.initialise())
+    {
+        Gamepad gamepad;
+        GamepadDriveAdapter adapter;
+        racer.setThrottleGain(0.5);
+        static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(&racer);
+        puts("Initialising Gamepad");
+        if (gamepad.initialise())
+        {
+            ControlCar controlCar;
+            gamepad.registerTo(&controlCar);
+            gamepad.registerTo(static_cast<GenericListener<GamepadEventData>*>(&adapter));
+            puts("Starting event loop");
+            if (gamepad.startThread())
+            {
+                puts("Event loop started.");
+                while (0 != sem_wait(controlCar.getSem()))
+                {
+                    ;
+                }
+            }
+        }
+        else
+        {
+            puts("Failed to initialise Gamepad");
+        }
+    }
+    else
+    {
+        puts("Failed to initialise NvidiaRacer");
+    }
+    puts("Finished");
     return 0;
 }

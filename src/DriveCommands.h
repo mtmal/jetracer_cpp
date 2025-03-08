@@ -24,16 +24,16 @@
 
 struct DriveCommands
 {
-	/** Steering control for the racer, value from -1 to 1. */
-	float mSteering;
-	/** Throttle control for the racer, value from -1 to 1. */
-	float mThrottle;
+    /** Steering control for the racer, value from -1 to 1. */
+    float mSteering;
+    /** Throttle control for the racer, value from -1 to 1. */
+    float mThrottle;
 
-	/**
-	 * Basic constructor that initialises all values with zeros.
-	 *  @param steering initial steering value.
-	 *  @param throttle initial throttle value.
-	 */
-	DriveCommands(const float steering = 0.0f, const float throttle = 0.0f) 
-	  : mSteering(steering), mThrottle(throttle) {};
+    /**
+     * Basic constructor that initialises all values with zeros.
+     *  @param steering initial steering value.
+     *  @param throttle initial throttle value.
+     */
+    DriveCommands(const float steering = 0.0f, const float throttle = 0.0f) 
+      : mSteering(steering), mThrottle(throttle) {};
 };

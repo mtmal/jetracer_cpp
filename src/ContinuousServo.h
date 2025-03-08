@@ -29,55 +29,55 @@ class PCA9685;
 class ContinuousServo
 {
 public:
-	/**
-	 * Class constructor, only initialises variables.
-	 *  @param pca9685 pointer to PCA9685 class which provides functionality for PWM control.
-	 *  @param channel a PCA9685 channel to which this servo is connected.
-	 */
-	ContinuousServo(const PCA9685* pca9685, const uint8_t channel = 0);
+    /**
+     * Class constructor, only initialises variables.
+     *  @param pca9685 pointer to PCA9685 class which provides functionality for PWM control.
+     *  @param channel a PCA9685 channel to which this servo is connected.
+     */
+    ContinuousServo(const PCA9685* pca9685, const uint8_t channel = 0);
 
-	/**
-	 * Class destructor. Sets throttle to 0.
-	 */
-	virtual ~ContinuousServo();
+    /**
+     * Class destructor. Sets throttle to 0.
+     */
+    virtual ~ContinuousServo();
 
-	/**
-	 * Initialises the class by setting minimum duty and duty range.
-	 *  @param minPulse the minimum pulse width of the servo in microseconds.
-	 *  @param maxPulse the maximum pulse width of the servo in microseconds.
-	 */
-	void initialise(const int minPulse = 750, const int maxPulse = 2250);
+    /**
+     * Initialises the class by setting minimum duty and duty range.
+     *  @param minPulse the minimum pulse width of the servo in microseconds.
+     *  @param maxPulse the maximum pulse width of the servo in microseconds.
+     */
+    void initialise(const int minPulse = 750, const int maxPulse = 2250);
 
-	/**
-	 * Sets the throttle of the servo.
-	 *  @param throttle a value from -1 to 1.
-	 */
-	inline void setThrottle(const float throttle) const
-	{
-		setFraction((throttle + 1) / 2);
-	}
+    /**
+     * Sets the throttle of the servo.
+     *  @param throttle a value from -1 to 1.
+     */
+    inline void setThrottle(const float throttle) const
+    {
+        setFraction((throttle + 1) / 2);
+    }
 
-	/**
-	 *  @return current servo throttle from -1 to 1.
-	 */
-	inline float getThrottle() const
-	{
-		return getFraction() * 2 - 1;
-	}
+    /**
+     *  @return current servo throttle from -1 to 1.
+     */
+    inline float getThrottle() const
+    {
+        return getFraction() * 2 - 1;
+    }
 
 private:
-	/** Pulse width expressed as fraction between 0.0 (`minPulse`) and 1.0 (`maxPulse`).
+    /** Pulse width expressed as fraction between 0.0 (`minPulse`) and 1.0 (`maxPulse`).
         For conventional servos, corresponds to the servo position as a fraction
         of the actuation range. */
-	void setFraction(const float fraction) const;
-	float getFraction() const;
+    void setFraction(const float fraction) const;
+    float getFraction() const;
 
-	/** Pointer to PCA9685 class for PWM control functionality. */
-	const PCA9685* mPCA9685;
-	/** A PCA9685 channel to which this servo is connected. */
-	uint8_t mChannel;
-	/** A minimum PWM duty for steering control. */
-	float mMinDuty;
-	/** Duty range for the whole steering range. */
-	float mDutyRange;
+    /** Pointer to PCA9685 class for PWM control functionality. */
+    const PCA9685* mPCA9685;
+    /** A PCA9685 channel to which this servo is connected. */
+    uint8_t mChannel;
+    /** A minimum PWM duty for steering control. */
+    float mMinDuty;
+    /** Duty range for the whole steering range. */
+    float mDutyRange;
 };

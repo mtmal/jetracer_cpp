@@ -36,23 +36,23 @@ ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
 
 ContinuousServo::~ContinuousServo()
 {
-	setThrottle(0.0f);
+    setThrottle(0.0f);
 }
 
 void ContinuousServo::initialise(const int minPulse, const int maxPulse)
 {
-	float frequency = mPCA9685->getFrequency();
-	float maxDuty   = static_cast<float>(maxPulse) * frequency * OFFSET;
-	mMinDuty        = static_cast<float>(minPulse) * frequency * OFFSET;
-	mDutyRange 	    = maxDuty - mMinDuty;
+    float frequency = mPCA9685->getFrequency();
+    float maxDuty   = static_cast<float>(maxPulse) * frequency * OFFSET;
+    mMinDuty        = static_cast<float>(minPulse) * frequency * OFFSET;
+    mDutyRange         = maxDuty - mMinDuty;
 }
 
 void ContinuousServo::setFraction(const float fraction) const
 {
-	mPCA9685->setDutyCycle(mChannel, static_cast<uint16_t>(mMinDuty + fraction * mDutyRange + 0.5f));
+    mPCA9685->setDutyCycle(mChannel, static_cast<uint16_t>(mMinDuty + fraction * mDutyRange + 0.5f));
 }
 
 float ContinuousServo::getFraction() const
 {
-	return static_cast<float>(mPCA9685->getDutyCycle(mChannel) - mMinDuty) / mDutyRange;
+    return static_cast<float>(mPCA9685->getDutyCycle(mChannel) - mMinDuty) / mDutyRange;
 }

@@ -26,31 +26,31 @@
 
 int main()
 {
-	NvidiaRacer racer;
-	float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
-	puts("Initialising NvidiaRacer");
-	if (racer.initialise())
-	{
+    NvidiaRacer racer;
+    float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
+    puts("Initialising NvidiaRacer");
+    if (racer.initialise())
+    {
         racer.setThrottleGain(0.3);
-		puts("Testing drive motors");
-		for (float throttle : testValues)
-		{
-			printf("Setting throttle to %.2f \n", throttle);
-			racer.setThrottle(throttle);
-			sleep(1);
-		}
+        puts("Testing drive motors");
+        for (float throttle : testValues)
+        {
+            printf("Setting throttle to %.2f \n", throttle);
+            racer.setThrottle(throttle);
+            sleep(1);
+        }
 
-		puts("Testing steering motor");
-		for (float steering : testValues)
-		{
-			printf("Setting steering to %.2f \n", steering);
-			racer.setSteering(steering);
-			sleep(1);
-		}
-	}
-	else
-	{
-		puts("Failed to initialise NvidiaRacer");
-	}
-	return 0;
+        puts("Testing steering motor");
+        for (float steering : testValues)
+        {
+            printf("Setting steering to %.2f \n", steering);
+            racer.setSteering(steering);
+            sleep(1);
+        }
+    }
+    else
+    {
+        puts("Failed to initialise NvidiaRacer");
+    }
+    return 0;
 }

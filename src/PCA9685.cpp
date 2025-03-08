@@ -56,62 +56,62 @@ PCA9685::PCA9685(const I2C* i2c, const uint8_t deviceAddress)
 
 PCA9685::~PCA9685()
 {
-	mI2C->writeByte(mDeviceAddress, ALL_LED_ON_L , 0);
-	mI2C->writeByte(mDeviceAddress, ALL_LED_ON_H , 0);
-	mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_L, 0);
-	mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_H, 0x10);
-	reset();
+    mI2C->writeByte(mDeviceAddress, ALL_LED_ON_L , 0);
+    mI2C->writeByte(mDeviceAddress, ALL_LED_ON_H , 0);
+    mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_L, 0);
+    mI2C->writeByte(mDeviceAddress, ALL_LED_OFF_H, 0x10);
+    reset();
 }
 
 void PCA9685::reset() const
 {
-	mI2C->writeByte(mDeviceAddress, MODE1, 0);
+    mI2C->writeByte(mDeviceAddress, MODE1, 0);
 }
 
 float PCA9685::getFrequency() const
 {
-	return REFERENCE_CLK_SPEED_SCALED / static_cast<float>(mI2C->readByte(mDeviceAddress, PRESCALE));
+    return REFERENCE_CLK_SPEED_SCALED / static_cast<float>(mI2C->readByte(mDeviceAddress, PRESCALE));
 }
 
 void PCA9685::setFrequency(const float frequency) const
 {
-	uint8_t prescale = static_cast<uint8_t>(REFERENCE_CLK_SPEED_SCALED / frequency + 0.5f) - 1;
-	if (prescale >= 3)
-	{
-		uint8_t oldMode = mI2C->readByte(mDeviceAddress, MODE1); // Mode 1
-		mI2C->writeByte(mDeviceAddress, MODE1, (oldMode & 0x7F) | SLEEP); // Mode 1, sleep
-		mI2C->writeByte(mDeviceAddress, PRESCALE, prescale); // Prescale
-		mI2C->writeByte(mDeviceAddress, MODE1, oldMode); // Mode 1
+    uint8_t prescale = static_cast<uint8_t>(REFERENCE_CLK_SPEED_SCALED / frequency + 0.5f) - 1;
+    if (prescale >= 3)
+    {
+        uint8_t oldMode = mI2C->readByte(mDeviceAddress, MODE1); // Mode 1
+        mI2C->writeByte(mDeviceAddress, MODE1, (oldMode & 0x7F) | SLEEP); // Mode 1, sleep
+        mI2C->writeByte(mDeviceAddress, PRESCALE, prescale); // Prescale
+        mI2C->writeByte(mDeviceAddress, MODE1, oldMode); // Mode 1
 
-		usleep(5000);
-		// Mode 1, autoincrement on, fix to stop pca9685 from accepting commands at all addresses
-		mI2C->writeByte(mDeviceAddress, MODE1, oldMode | RESTART | AUTO_INCR);
-	}
+        usleep(5000);
+        // Mode 1, autoincrement on, fix to stop pca9685 from accepting commands at all addresses
+        mI2C->writeByte(mDeviceAddress, MODE1, oldMode | RESTART | AUTO_INCR);
+    }
 }
 
 uint16_t PCA9685::getDutyCycle(const uint8_t channel) const
 {
-	uint16_t on, off;
-	getPWM(channel, on, off);
-	return (on == 0x1000) ? on : off;
+    uint16_t on, off;
+    getPWM(channel, on, off);
+    return (on == 0x1000) ? on : off;
 }
 
 void PCA9685::getPWM(const uint8_t channel, uint16_t& on, uint16_t& off) const
 {
-	uint8_t channelOffset = 4 * channel;
-	uint8_t on_l  = mI2C->readByte(mDeviceAddress, LED0_ON_L  + channelOffset);
-	uint8_t on_h  = mI2C->readByte(mDeviceAddress, LED0_ON_H  + channelOffset);
-	uint8_t off_l = mI2C->readByte(mDeviceAddress, LED0_OFF_L + channelOffset);
-	uint8_t off_h = mI2C->readByte(mDeviceAddress, LED0_OFF_H + channelOffset);
-	on  = (static_cast<uint16_t>(on_h)  << 8) & on_l;
-	off = (static_cast<uint16_t>(off_h) << 8) & off_l;
+    uint8_t channelOffset = 4 * channel;
+    uint8_t on_l  = mI2C->readByte(mDeviceAddress, LED0_ON_L  + channelOffset);
+    uint8_t on_h  = mI2C->readByte(mDeviceAddress, LED0_ON_H  + channelOffset);
+    uint8_t off_l = mI2C->readByte(mDeviceAddress, LED0_OFF_L + channelOffset);
+    uint8_t off_h = mI2C->readByte(mDeviceAddress, LED0_OFF_H + channelOffset);
+    on  = (static_cast<uint16_t>(on_h)  << 8) & on_l;
+    off = (static_cast<uint16_t>(off_h) << 8) & off_l;
 }
 
 void PCA9685::setPWM(const uint8_t channel, const uint16_t on, const uint16_t off) const
 {
-	uint8_t channelOffset = 4 * channel;
-	mI2C->writeByte(mDeviceAddress, LED0_ON_L  + channelOffset, on  &  0xFF);
-	mI2C->writeByte(mDeviceAddress, LED0_ON_H  + channelOffset, on  >>  8);
-	mI2C->writeByte(mDeviceAddress, LED0_OFF_L + channelOffset, off &  0xFF);
-	mI2C->writeByte(mDeviceAddress, LED0_OFF_H + channelOffset, off >>  8);
+    uint8_t channelOffset = 4 * channel;
+    mI2C->writeByte(mDeviceAddress, LED0_ON_L  + channelOffset, on  &  0xFF);
+    mI2C->writeByte(mDeviceAddress, LED0_ON_H  + channelOffset, on  >>  8);
+    mI2C->writeByte(mDeviceAddress, LED0_OFF_L + channelOffset, off &  0xFF);
+    mI2C->writeByte(mDeviceAddress, LED0_OFF_H + channelOffset, off >>  8);
 }

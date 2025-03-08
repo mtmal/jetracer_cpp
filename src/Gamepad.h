@@ -31,33 +31,33 @@
 
 
 class Gamepad : public GenericTalker<GamepadEventData>,
-				public GenericThread<Gamepad>
+                public GenericThread<Gamepad>
 {
 public:
-	/**
-	 * Basic constructor.
-	 */
-	Gamepad();
+    /**
+     * Basic constructor.
+     */
+    Gamepad();
 
-	/**
-	 * Basic destructor, stops the event thread and closes joystick device.
-	 */
-	virtual ~Gamepad();
+    /**
+     * Basic destructor, stops the event thread and closes joystick device.
+     */
+    virtual ~Gamepad();
 
-	/**
-	 * Initialises gamepad by opening device.
-	 *  @param device path to joystick device.
-	 *  @return true if connection was established.
-	 */
-	bool initialise(const char* device = "/dev/input/js0");
+    /**
+     * Initialises gamepad by opening device.
+     *  @param device path to joystick device.
+     *  @return true if connection was established.
+     */
+    bool initialise(const char* device = "/dev/input/js0");
 
-	/**
-	 * Runs the main gamepad event loop.
-	 *  @return nullptr
-	 */
-	void* threadBody();
+    /**
+     * Runs the main gamepad event loop.
+     *  @return nullptr
+     */
+    void* threadBody();
 
 private:
-	/** Device ID. */
-	int mDevice;
+    /** Device ID. */
+    int mDevice;
 };

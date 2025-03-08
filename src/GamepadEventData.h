@@ -29,10 +29,10 @@
  */
 struct GamepadEventData
 {
-	/* Flag indicating if the event comes from a axis (true) or button (false). */
-	char mIsAxis;
-	/* The number of axis/button that caused the event to trigger. */
-	char mNumber;
-	/* Value associated with triggered axis/button. */
-	short mValue;
+    /* Flag indicating if the event comes from a axis (true) or button (false). */
+    char mIsAxis;
+    /* The number of axis/button that caused the event to trigger. */
+    char mNumber;
+    /* Value associated with triggered axis/button. */
+    short mValue;
 };

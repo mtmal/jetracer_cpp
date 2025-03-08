@@ -31,109 +31,109 @@
 class NvidiaRacer : public GenericListener<DriveCommands>
 {
 public:
-	/**
-	 * Basic constructor, initialises only variables.
-	 *  @param steeringGain initial steering gain
-	 *  @param steeringOffset initial steering offset
-	 *  @param throttleGain initial throttle gain
-	 */
-	NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = 0.8f);
+    /**
+     * Basic constructor, initialises only variables.
+     *  @param steeringGain initial steering gain
+     *  @param steeringOffset initial steering offset
+     *  @param throttleGain initial throttle gain
+     */
+    NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = 0.8f);
 
-	/**
-	 * Class destructor, set steering and throttle to zero.
-	 */
-	virtual ~NvidiaRacer();
+    /**
+     * Class destructor, set steering and throttle to zero.
+     */
+    virtual ~NvidiaRacer();
 
-	/**
-	 * Initialises the class by opening serial port to I2C device and resetting PCA9685 boards.
-	 *  @param devicePath path to I2C device, e.g. "/dev/i2c-1"
-	 *  @return true if the initialisation was successful.
-	 */
-	bool initialise(const char* devicePath = "/dev/i2c-1");
+    /**
+     * Initialises the class by opening serial port to I2C device and resetting PCA9685 boards.
+     *  @param devicePath path to I2C device, e.g. "/dev/i2c-1"
+     *  @return true if the initialisation was successful.
+     */
+    bool initialise(const char* devicePath = "/dev/i2c-1");
 
-	/**
-	 *  @return the steering value.
-	 */
-	float getSteering() const;
+    /**
+     *  @return the steering value.
+     */
+    float getSteering() const;
 
-	/**
-	 *  @param steering sets the new steering value.
-	 */
-	void setSteering(const float steering);
+    /**
+     *  @param steering sets the new steering value.
+     */
+    void setSteering(const float steering);
 
-	/**
-	 *  @return the throttle value.
-	 */
-	float getThrottle() const;
+    /**
+     *  @return the throttle value.
+     */
+    float getThrottle() const;
 
-	/**
-	 *  @param steering sets the new throttle value.
-	 */
-	void setThrottle(const float throttle);
+    /**
+     *  @param steering sets the new throttle value.
+     */
+    void setThrottle(const float throttle);
 
-	/**
-	 *  @return steering gain
-	 */
-	float getSteeringGain() const;
+    /**
+     *  @return steering gain
+     */
+    float getSteeringGain() const;
 
-	/**
-	 *  @param steeringGain new steering gain
-	 */
-	void setSteeringGain(const float steeringGain);
+    /**
+     *  @param steeringGain new steering gain
+     */
+    void setSteeringGain(const float steeringGain);
 
-	/**
-	 *  @return steering offset
-	 */
-	float getSteeringOffset() const;
+    /**
+     *  @return steering offset
+     */
+    float getSteeringOffset() const;
 
-	/**
-	 *  @param steeringOffset new steering offset
-	 */
-	void setSteeringOffset(const float steeringOffset);
+    /**
+     *  @param steeringOffset new steering offset
+     */
+    void setSteeringOffset(const float steeringOffset);
 
-	/**
-	 *  @return throttle gain
-	 */
-	float getThrottleGain() const;
+    /**
+     *  @return throttle gain
+     */
+    float getThrottleGain() const;
 
-	/**
-	 *  @param throttleGain new throttle gain
-	 */
-	void setThrottleGain(const float throttleGain);
+    /**
+     *  @param throttleGain new throttle gain
+     */
+    void setThrottleGain(const float throttleGain);
 
-	/**
-	 *  @param driveCommands new drive commands for jetracer.
-	 */
-	void update(const DriveCommands& driveCommands) override;
+    /**
+     *  @param driveCommands new drive commands for jetracer.
+     */
+    void update(const DriveCommands& driveCommands) override;
 
 private:
-	/** Steering control for the racer, value from -1 to 1. */
-	float mSteering;
-	/** Throttle control for the racer, value from -1 to 1. */
-	float mThrottle;
-	/** Steering gain for steering control. */
-	float mSteeringGain;
-	/** A steering offset for steering wheels alignment. */
-	float mSteeringOffset;
-	/** Throttle gain for throttle control. */
-	float mThrottleGain;
-	/** Object for I2C communication. */
-	I2C mI2C;
+    /** Steering control for the racer, value from -1 to 1. */
+    float mSteering;
+    /** Throttle control for the racer, value from -1 to 1. */
+    float mThrottle;
+    /** Steering gain for steering control. */
+    float mSteeringGain;
+    /** A steering offset for steering wheels alignment. */
+    float mSteeringOffset;
+    /** Throttle gain for throttle control. */
+    float mThrottleGain;
+    /** Object for I2C communication. */
+    I2C mI2C;
 #ifdef JETRACER_PRO
-	/** PCA9685 board for controlling motors. */
-	PCA9685 mPCA;
-	/** Object for controlling throttle motor. */
-	ContinuousServo mThrottleMotor;
+    /** PCA9685 board for controlling motors. */
+    PCA9685 mPCA;
+    /** Object for controlling throttle motor. */
+    ContinuousServo mThrottleMotor;
 #else
-	/** PCA9685 board which controls drive motors. */
-	PCA9685 mThrottlePCA;
-	/** PCA9685 board which controls steering motor. */
-	PCA9685 mSteeringPCA;
+    /** PCA9685 board which controls drive motors. */
+    PCA9685 mThrottlePCA;
+    /** PCA9685 board which controls steering motor. */
+    PCA9685 mSteeringPCA;
 #endif
-	/** Object for controlling steering motor. */
-	ContinuousServo mSteeringMotor;
-	/** Mutex for accessing steering. */
-	mutable pthread_mutex_t mSteeringMutex;
-	/** Mutex for accessing throttle. */
-	mutable pthread_mutex_t mThrottleMutex;
+    /** Object for controlling steering motor. */
+    ContinuousServo mSteeringMotor;
+    /** Mutex for accessing steering. */
+    mutable pthread_mutex_t mSteeringMutex;
+    /** Mutex for accessing throttle. */
+    mutable pthread_mutex_t mThrottleMutex;
 };
