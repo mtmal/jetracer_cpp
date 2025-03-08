@@ -36,6 +36,12 @@ GamepadDriveAdapter::~GamepadDriveAdapter()
 {
 }
 
+void GamepadDriveAdapter::setAxes(const int steeringAxis, const int throttleAxis)
+{
+    mSteeringAxis = steeringAxis;
+    mThrottleAxis = throttleAxis;
+}
+
 void GamepadDriveAdapter::update(const GamepadEventData& eventData)
 {
     if (eventData.mIsAxis)

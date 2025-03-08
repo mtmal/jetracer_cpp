@@ -22,10 +22,10 @@
 
 #pragma once
 
+#include <GamepadEventData.h>
 #include <GenericListener.h>
 #include <GenericTalker.h>
 #include "DriveCommands.h"
-#include "GamepadEventData.h"
 
 
 /**
@@ -40,12 +40,19 @@ public:
      *  @param steeringAxis ID of the gamepad axis controlling steering angle.
      *  @param throttleAxis ID of the gamepad axis controlling throttle.
      */
-    GamepadDriveAdapter(const int steeringAxis = 0, const int throttleAxis = 1);
+    GamepadDriveAdapter(const int steeringAxis = 2, const int throttleAxis = 3);
 
     /**
      * Basic destructor. 
      */
     virtual ~GamepadDriveAdapter();
+
+    /**
+     * Sets the control axes.
+     *  @param steeringAxis ID of the gamepad axis controlling steering angle.
+     *  @param throttleAxis ID of the gamepad axis controlling throttle.
+     */
+    void setAxes(const int steeringAxis = 0, const int throttleAxis = 1);
 
     /**
      * Receives updates from the gamepad and converts them into drive commands.

@@ -4,3 +4,6 @@
 [submodule "JetracerUtils"]
 	path = JetracerUtils
 	url = git@github.com:mtmal/JetracerUtils.git
+[submodule "GamepadController"]
+	path = GamepadController
+	url = https://github.com/mtmal/gamepad_controller
