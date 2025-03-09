@@ -15,7 +15,7 @@ if (CUSTOM_JETRACER_UTILS)
 else()
     add_subdirectory(JetracerUtils)
     include_directories(JetracerUtils/src)
-    set(CUSTOM_JETRACER_UTILS JetracerUtils) # for the GamepadController submodule
+    set(CUSTOM_JETRACER_UTILS JetracerUtils) # for the Gamepad submodule
 endif()
 
 # add the I2C submodule
@@ -24,7 +24,6 @@ if (CUSTOM_I2C)
 else()
     add_subdirectory(I2C)
     include_directories(I2C/src)
-    set(CUSTOM_I2C I2C) # for the MotorController submodule
 endif()
 
 # add the gamepad submodule
@@ -35,19 +34,11 @@ else()
     include_directories(GamepadController/src)
 endif()
 
-# add the gamepad submodule
-if (CUSTOM_MOTOR_CONTROLLER)
-    include_directories(${CUSTOM_MOTOR_CONTROLLER}/src)
-else()
-    add_subdirectory(MotorController)
-    include_directories(MotorController/src)
-endif()
-
 include_directories(src)
 
 # Build the actual library
-add_library(JetRacer SHARED src/NvidiaRacer.cpp src/GamepadDriveAdapter.cpp)
-target_link_libraries(JetRacer I2C JetracerUtils GamepadController MotorController)
+add_library(JetRacer SHARED src/NvidiaRacer.cpp src/PCA9685.cpp src/ContinuousServo.cpp src/GamepadDriveAdapter.cpp)
+target_link_libraries(JetRacer I2C JetracerUtils GamepadController)
 
 # add the test application
 add_executable(test_JetRacer tests/jetracer_app.cpp)
