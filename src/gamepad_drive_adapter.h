@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include <GamepadEventData.h>
-#include <GenericListener.h>
-#include <GenericTalker.h>
-#include "DriveCommands.h"
+#include <gamepad_event_data.h>
+#include <generic_listener.h>
+#include <generic_talker.h>
+#include "drive_commands.h"
 
 
 /**

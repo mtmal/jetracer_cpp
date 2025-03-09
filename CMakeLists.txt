@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
-project(JetRacer_Cpp)
+project(RobotController)
 
 set(CMAKE_CXX_FLAGS "-fPIC -g -pedantic -Wall -Wextra")
 
@@ -10,12 +10,12 @@ if(JETRACER_PRO)
 endif()
 
 # add the jetracer utils submodule
-if (CUSTOM_JETRACER_UTILS)
-    include_directories(${CUSTOM_JETRACER_UTILS}/src)
+if (CUSTOM_UTILS)
+    include_directories(${CUSTOM_UTILS}/src)
 else()
-    add_subdirectory(JetracerUtils)
-    include_directories(JetracerUtils/src)
-    set(CUSTOM_JETRACER_UTILS JetracerUtils) # for the Gamepad submodule
+    add_subdirectory(Utils)
+    include_directories(Utils/src)
+    set(CUSTOM_UTILS JetracerUtils) # for the Gamepad submodule
 endif()
 
 # add the I2C submodule
@@ -37,13 +37,13 @@ endif()
 include_directories(src)
 
 # Build the actual library
-add_library(JetRacer SHARED src/NvidiaRacer.cpp src/PCA9685.cpp src/ContinuousServo.cpp src/GamepadDriveAdapter.cpp)
-target_link_libraries(JetRacer I2C JetracerUtils GamepadController)
+add_library(RobotController SHARED src/robots/nvidia_racer.cpp src/motor_controller/pca9685.cpp src/motor_controller/continuous_servo.cpp src/gamepad_drive_adapter.cpp)
+target_link_libraries(RobotController I2C GamepadController pthread)
 
 # add the test application
-add_executable(test_JetRacer tests/jetracer_app.cpp)
-target_link_libraries(test_JetRacer JetRacer)
+add_executable(test_jestracer tests/jetracer_app.cpp)
+target_link_libraries(test_jestracer RobotController)
 
 # add the test application
-add_executable(test_JetRacer_Gamepad tests/jetracer_gamepad.cpp)
-target_link_libraries(test_JetRacer_Gamepad JetRacer)
+add_executable(test_jestracer_gamepad tests/jetracer_gamepad.cpp)
+target_link_libraries(test_jestracer_gamepad RobotController)

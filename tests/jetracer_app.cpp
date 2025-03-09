@@ -22,7 +22,7 @@
 
 #include <cstdio>
 #include <unistd.h>
-#include <NvidiaRacer.h>
+#include <robots/nvidia_racer.h>
 
 int main()
 {

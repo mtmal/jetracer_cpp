@@ -20,45 +20,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "GamepadDriveAdapter.h"
+#include "continuous_servo.h"
+#include "pca9685.h"
+
+static constexpr float OFFSET = 0x0FFF / 1000000.0f;
 
 
-static constexpr float MAX_SHORT = 32767.0f;
-
-
-GamepadDriveAdapter::GamepadDriveAdapter(const int steeringAxis, const int throttleAxis)
-: mSteeringAxis(steeringAxis),
-  mThrottleAxis(throttleAxis)
+ContinuousServo::ContinuousServo(const PCA9685* pca9685, const uint8_t channel)
+: mPCA9685(pca9685), 
+  mChannel(channel), 
+  mMinDuty(0), 
+  mDutyRange(0)
 {
 }
 
-GamepadDriveAdapter::~GamepadDriveAdapter()
+ContinuousServo::~ContinuousServo()
 {
+    setThrottle(0.0f);
 }
 
-void GamepadDriveAdapter::setAxes(const int steeringAxis, const int throttleAxis)
+void ContinuousServo::initialise(const int minPulse, const int maxPulse)
 {
-    mSteeringAxis = steeringAxis;
-    mThrottleAxis = throttleAxis;
+    float frequency = mPCA9685->getFrequency();
+    float maxDuty   = static_cast<float>(maxPulse) * frequency * OFFSET;
+    mMinDuty        = static_cast<float>(minPulse) * frequency * OFFSET;
+    mDutyRange         = maxDuty - mMinDuty;
 }
 
-void GamepadDriveAdapter::update(const GamepadEventData& eventData)
+void ContinuousServo::setFraction(const float fraction) const
 {
-    if (eventData.mIsAxis)
-    {
-        if (eventData.mNumber == mSteeringAxis)
-        {
-            mDriveCommand.mSteering = static_cast<float>(-eventData.mValue) / MAX_SHORT;
-            notifyListeners(mDriveCommand);
-        }
-        else if (eventData.mNumber == mThrottleAxis)
-        {
-            mDriveCommand.mThrottle = static_cast<float>( eventData.mValue) / MAX_SHORT;
-            notifyListeners(mDriveCommand);
-        }
-        else
-        {
-            // nothing to do in here
-        }
-    }
+    mPCA9685->setDutyCycle(mChannel, static_cast<uint16_t>(mMinDuty + fraction * mDutyRange + 0.5f));
+}
+
+float ContinuousServo::getFraction() const
+{
+    return static_cast<float>(mPCA9685->getDutyCycle(mChannel) - mMinDuty) / mDutyRange;
 }

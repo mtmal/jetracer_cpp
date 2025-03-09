@@ -1,9 +1,9 @@
 [submodule "I2C"]
 	path = I2C
-	url = https://github.com/mtmal/I2C.git
-[submodule "JetracerUtils"]
-	path = JetracerUtils
-	url = git@github.com:mtmal/JetracerUtils.git
+	url = https://github.com/mtmal/i2c
+[submodule "Utils"]
+	path = Utils
+	url = https://github.com/mtmal/utils
 [submodule "GamepadController"]
 	path = GamepadController
 	url = https://github.com/mtmal/gamepad_controller

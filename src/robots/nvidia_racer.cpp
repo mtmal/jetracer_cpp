@@ -21,8 +21,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cmath>
-#include <GenericTalker.h>
-#include "NvidiaRacer.h"
+#include <generic_talker.h>
+#include "nvidia_racer.h"
 
 #define PCA9685_ADDRESS_1    0x40
 #define PCA9685_ADDRESS_2    0x60

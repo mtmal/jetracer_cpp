@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2023 Mateusz Malinowski
+// Copyright (C) 2022 Mateusz Malinowski
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,45 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include "gamepad_drive_adapter.h"
 
-struct DriveCommands
+
+static constexpr float MAX_SHORT = 32767.0f;
+
+
+GamepadDriveAdapter::GamepadDriveAdapter(const int steeringAxis, const int throttleAxis)
+: mSteeringAxis(steeringAxis),
+  mThrottleAxis(throttleAxis)
 {
-    /** Steering control for the racer, value from -1 to 1. */
-    float mSteering;
-    /** Throttle control for the racer, value from -1 to 1. */
-    float mThrottle;
+}
 
-    /**
-     * Basic constructor that initialises all values with zeros.
-     *  @param steering initial steering value.
-     *  @param throttle initial throttle value.
-     */
-    DriveCommands(const float steering = 0.0f, const float throttle = 0.0f) 
-      : mSteering(steering), mThrottle(throttle) {};
-};
+GamepadDriveAdapter::~GamepadDriveAdapter()
+{
+}
+
+void GamepadDriveAdapter::setAxes(const int steeringAxis, const int throttleAxis)
+{
+    mSteeringAxis = steeringAxis;
+    mThrottleAxis = throttleAxis;
+}
+
+void GamepadDriveAdapter::update(const GamepadEventData& eventData)
+{
+    if (eventData.mIsAxis)
+    {
+        if (eventData.mNumber == mSteeringAxis)
+        {
+            mDriveCommand.mSteering = static_cast<float>(-eventData.mValue) / MAX_SHORT;
+            notifyListeners(mDriveCommand);
+        }
+        else if (eventData.mNumber == mThrottleAxis)
+        {
+            mDriveCommand.mThrottle = static_cast<float>( eventData.mValue) / MAX_SHORT;
+            notifyListeners(mDriveCommand);
+        }
+        else
+        {
+            // nothing to do in here
+        }
+    }
+}

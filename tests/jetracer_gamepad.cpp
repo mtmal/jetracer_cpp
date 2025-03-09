@@ -23,9 +23,9 @@
 #include <cstdio>
 #include <semaphore.h>
 #include <unistd.h>
-#include <Gamepad.h>
-#include <GamepadDriveAdapter.h>
-#include <NvidiaRacer.h>
+#include <gamepad.h>
+#include <gamepad_drive_adapter.h>
+#include <robots/nvidia_racer.h>
 
 
 constexpr float MAX_SHORT = 32767.0f;

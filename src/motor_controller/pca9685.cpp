@@ -21,8 +21,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <unistd.h>
-#include <I2C.h>
-#include "PCA9685.h"
+#include <i2c.h>
+#include "pca9685.h"
 
 #define MODE1              0x00
 #define MODE2              0x01
