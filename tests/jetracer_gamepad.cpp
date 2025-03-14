@@ -21,11 +21,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdio>
+#include <cstring>
 #include <semaphore.h>
 #include <unistd.h>
 #include <gamepad.h>
 #include <gamepad_drive_adapter.h>
 #include <robots/nvidia_racer.h>
+#include <robots/pridopia_car.h>
 
 
 constexpr float MAX_SHORT = 32767.0f;
@@ -63,16 +65,38 @@ private:
     int mStopButton;
 };
 
-int main()
+int main(int argc, char** argv)
 {
-    NvidiaRacer racer;
-    puts("Initialising NvidiaRacer");
-    if (racer.initialise())
+    ARobotBase* robot = nullptr;
+    
+    if (argc != 4)
+    {
+        printf("Usage: %s <nvidia | pridopia> <throttle gain> <steering offset> \n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "nvdia") == 0)
+    {
+        robot = new NvidiaRacer();
+    }
+    else if (strcmp(argv[1], "pridopia") == 0)
+    {
+        robot = new PridopiaCar();
+    }
+    else
+    {
+        printf("Unknown robot %s. Use either nvdia or pridopia \n", argv[1]);
+        return 2;
+    }
+
+    printf("Initialising %s \n", robot->getName());
+    if (robot->initialise())
     {
         Gamepad gamepad;
         GamepadDriveAdapter adapter;
-        racer.setThrottleGain(0.5);
-        static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(&racer);
+        robot->setThrottleGain(atof(argv[2]));
+        robot->setSteeringOffset(atof(argv[3]));
+        static_cast<GenericTalker<DriveCommands>&>(adapter).registerTo(robot);
         puts("Initialising Gamepad");
         if (gamepad.initialise())
         {
@@ -96,7 +120,7 @@ int main()
     }
     else
     {
-        puts("Failed to initialise NvidiaRacer");
+        printf("Failed to initialise %s \n", robot->getName());
     }
     puts("Finished");
     return 0;

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2022 Mateusz Malinowski
+// Copyright (C) 2025 Mateusz Malinowski
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,8 @@
 #pragma once
 
 #include "abstract_robot_base.h"
-#include "motor_controller/continuous_servo.h"
 
-class NvidiaRacer : public ARobotBase
+class PridopiaCar : public ARobotBase
 {
 public:
     /**
@@ -34,12 +33,12 @@ public:
      *  @param steeringOffset initial steering offset
      *  @param throttleGain initial throttle gain
      */
-    NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = 0.8f);
+    PridopiaCar(const float steeringGain = 1.0f, const float steeringOffset = 0, const float throttleGain = 0.8f);
 
     /**
      * Class destructor, set steering and throttle to zero.
      */
-    virtual ~NvidiaRacer();
+    virtual ~PridopiaCar();
 
     bool initialise(const char* devicePath = "/dev/i2c-1") override;
     void setSteering(const float steering) override;
@@ -47,15 +46,10 @@ public:
     void update(const DriveCommands& driveCommands) override;
 
 private:
-#ifdef JETRACER_PRO
-    /** Object for controlling throttle motor. */
-    ContinuousServo mThrottleMotor;
-#else
-    /** PCA9685 board which controls steering motor. */
-    PCA9685 mSteeringPCA;
-#endif
-    /** Object for controlling steering motor. */
-    ContinuousServo mSteeringMotor;
-    /** Mutex for accessing steering. */
-    mutable pthread_mutex_t mSteeringMutex;
+    /**
+     * Commands the wheels by conveting @p throttle and @p steering to individual wheel commands.
+     *  @param throttle
+     *  @param steering
+     */
+    void commandWheels(const float throttle, const float steering) const;
 };

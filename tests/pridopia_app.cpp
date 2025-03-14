@@ -20,42 +20,29 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include <cstdio>
+#include <unistd.h>
+#include <robots/pridopia_car.h>
 
-#include "abstract_robot_base.h"
-#include "motor_controller/continuous_servo.h"
-
-class NvidiaRacer : public ARobotBase
+int main()
 {
-public:
-    /**
-     * Basic constructor, initialises only variables.
-     *  @param steeringGain initial steering gain
-     *  @param steeringOffset initial steering offset
-     *  @param throttleGain initial throttle gain
-     */
-    NvidiaRacer(const float steeringGain = -0.65f, const float steeringOffset = 0, const float throttleGain = 0.8f);
-
-    /**
-     * Class destructor, set steering and throttle to zero.
-     */
-    virtual ~NvidiaRacer();
-
-    bool initialise(const char* devicePath = "/dev/i2c-1") override;
-    void setSteering(const float steering) override;
-    void setThrottle(const float throttle) override;
-    void update(const DriveCommands& driveCommands) override;
-
-private:
-#ifdef JETRACER_PRO
-    /** Object for controlling throttle motor. */
-    ContinuousServo mThrottleMotor;
-#else
-    /** PCA9685 board which controls steering motor. */
-    PCA9685 mSteeringPCA;
-#endif
-    /** Object for controlling steering motor. */
-    ContinuousServo mSteeringMotor;
-    /** Mutex for accessing steering. */
-    mutable pthread_mutex_t mSteeringMutex;
-};
+    PridopiaCar racer;
+    float testValues[] = {0.5f, 1.0f, 0.5f, 0.0f, -0.5f, -1.0f, -0.5f, 0.0f};
+    puts("Initialising PridopiaCar");
+    if (racer.initialise())
+    {
+        racer.setThrottleGain(-1.0);
+        puts("Testing drive motors");
+        for (float throttle : testValues)
+        {
+            printf("Setting throttle to %.2f \n", throttle);
+            racer.setThrottle(throttle);
+            sleep(1);
+        }
+    }
+    else
+    {
+        puts("Failed to initialise PridopiaCar");
+    }
+    return 0;
+}

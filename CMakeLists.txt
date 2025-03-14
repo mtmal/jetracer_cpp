@@ -37,7 +37,7 @@ endif()
 include_directories(src)
 
 # Build the actual library
-add_library(RobotController SHARED src/robots/nvidia_racer.cpp src/motor_controller/pca9685.cpp src/motor_controller/continuous_servo.cpp src/gamepad_drive_adapter.cpp)
+add_library(RobotController SHARED src/robots/abstract_robot_base.cpp src/robots/nvidia_racer.cpp src/robots/pridopia_car.cpp src/motor_controller/pca9685.cpp src/motor_controller/continuous_servo.cpp src/gamepad_drive_adapter.cpp)
 target_link_libraries(RobotController I2C GamepadController pthread)
 
 # add the test application
@@ -47,3 +47,7 @@ target_link_libraries(test_jestracer RobotController)
 # add the test application
 add_executable(test_jestracer_gamepad tests/jetracer_gamepad.cpp)
 target_link_libraries(test_jestracer_gamepad RobotController)
+
+# add the test application
+add_executable(test_pridopia tests/pridopia_app.cpp)
+target_link_libraries(test_pridopia RobotController)
